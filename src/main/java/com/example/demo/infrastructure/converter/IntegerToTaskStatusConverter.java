@@ -5,15 +5,14 @@ import org.springframework.data.convert.ReadingConverter;
 
 import com.example.demo.domain.model.task.TaskStatus;
 
+import java.util.Objects;
+
 @ReadingConverter
 public class IntegerToTaskStatusConverter implements Converter<Integer, TaskStatus> {
     @Override
     public TaskStatus convert(Integer source) {
-        if (source == null) {
-            return null;
-        }
         for (TaskStatus status : TaskStatus.values()) {
-            if (status.getCode() == source) {
+            if (Objects.equals(status.getCode(), source)) {
                 return status;
             }
         }
