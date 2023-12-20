@@ -4,19 +4,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "TASKS")
+@Table(name = "tasks")
 public class Task {
     @Id
+    @Column("id")
     private Long id;
+    @Column("title")
     private String title;
+    @Column("content")
     private String content;
+    @Column("status")
     private TaskStatus status;
+    @Column("created_at")
     private LocalDateTime createdAt;
 
-    @MappedCollection(idColumn = "PARENT_ID", keyColumn = "ID")
+    @MappedCollection(idColumn = "parent_id", keyColumn = "id")
     private List<SubTask> subTasks; // 子タスクのリスト
 
 

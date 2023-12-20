@@ -3,16 +3,23 @@ package com.example.demo.domain.model.task;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "SUB_TASKS")
+@Table(name = "sub_tasks")
 public class SubTask {
     @Id
+    @Column("id")
     private Long id;
+    @Column("parent_id")
     private Long parentId;
+    @Column("title")
     private String title;
+    @Column("content")
     private String content;
+    @Column("status")
     private TaskStatus status;
+    @Column("created_at")
     private LocalDateTime createdAt;
 
     // プライベートコンストラクタで直接のインスタンス化を防ぐ

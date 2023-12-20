@@ -1,4 +1,4 @@
-package com.example.demo.domain.repository;
+package com.example.demo.domain.repository.task;
 
 import java.util.Optional;
 
