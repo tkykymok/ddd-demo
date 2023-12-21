@@ -2,24 +2,17 @@ package com.example.demo.domain.model.task;
 
 import java.time.LocalDateTime;
 
+import com.example.demo.domain.model.BaseEntity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table(name = "sub_tasks")
-public class SubTask {
-    @Id
-    @Column("id")
-    private Long id;
-    @Column("parent_id")
+@Table(name = "SUB_TASKS")
+public class SubTask extends BaseEntity {
     private Long parentId;
-    @Column("title")
     private String title;
-    @Column("content")
     private String content;
-    @Column("status")
     private TaskStatus status;
-    @Column("created_at")
     private LocalDateTime createdAt;
 
     // プライベートコンストラクタで直接のインスタンス化を防ぐ
@@ -35,12 +28,6 @@ public class SubTask {
         subTask.status = TaskStatus.UNCOMPLETED;
         subTask.createdAt = LocalDateTime.now(); // 現在の日時で初期化
         return subTask;
-    }
-
-
-
-    public Long getId() {
-        return id;
     }
 
     public Long getParentId() {

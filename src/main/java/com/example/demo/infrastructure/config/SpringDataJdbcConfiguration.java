@@ -14,6 +14,7 @@ public class SpringDataJdbcConfiguration extends AbstractJdbcConfiguration {
     public JdbcCustomConversions jdbcCustomConversions() {
         return new JdbcCustomConversions(Arrays.asList(
                 Enum2Integer.INSTANCE
+//                new BigDecimalToMoneyConverter()
 //                new IntegerToTaskStatusConverter(),
 //                new Integer2Enum<TaskStatus>(TaskStatus.class)
         ));

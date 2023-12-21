@@ -1,43 +1,55 @@
-CREATE TABLE tasks
+CREATE TABLE TASKS
 (
-    id         BIGINT PRIMARY KEY,
-    title      VARCHAR(255),
-    content    TEXT,
-    status     INT NOT NULL,
-    created_at TIMESTAMP
+    ID         BIGINT PRIMARY KEY,
+    TITLE      VARCHAR(255),
+    CONTENT    TEXT,
+    STATUS     INT NOT NULL,
+    CREATED_AT TIMESTAMP
 );
 
-CREATE TABLE sub_tasks
+CREATE TABLE SUB_TASKS
 (
-    id         BIGINT PRIMARY KEY,
-    parent_id  BIGINT, -- 親タスクへの参照
-    title      VARCHAR(255),
-    content    TEXT,
-    status     INT NOT NULL,
-    created_at TIMESTAMP,
-    FOREIGN KEY (parent_id) REFERENCES tasks (id)
+    ID         BIGINT PRIMARY KEY,
+    PARENT_ID  BIGINT, -- 親タスクへの参照
+    TITLE      VARCHAR(255),
+    CONTENT    TEXT,
+    STATUS     INT NOT NULL,
+    CREATED_AT TIMESTAMP,
+    FOREIGN KEY (PARENT_ID) REFERENCES TASKS (ID)
 );
 
-CREATE TABLE app_users
+CREATE TABLE APP_USERS
 (
-    id    BIGINT PRIMARY KEY,
-    name  VARCHAR(255),
-    email VARCHAR(255)
+    ID    BIGINT PRIMARY KEY,
+    NAME  VARCHAR(255),
+    EMAIL VARCHAR(255)
 );
 
-CREATE TABLE orders
+CREATE TABLE ORDERS
 (
-    id         BIGINT PRIMARY KEY,
-    user_id    BIGINT,
-    order_date DATE,
-    FOREIGN KEY (user_id) REFERENCES app_users (id)
+    ID           BIGINT PRIMARY KEY,
+    USER_ID      BIGINT,
+    ORDER_DATE   DATE,
+    TOTAL_AMOUNT DECIMAL,
+    FOREIGN KEY (USER_ID) REFERENCES APP_USERS (ID)
 );
 
-CREATE TABLE products
+CREATE TABLE PRODUCTS
 (
-    id       BIGINT PRIMARY KEY,
-    name     VARCHAR(255),
-    price DOUBLE,
-    order_id BIGINT,
-    FOREIGN KEY (order_id) REFERENCES orders (id)
+    ID       BIGINT PRIMARY KEY,
+    NAME     VARCHAR(255),
+    PRICE    DECIMAL,
+    ORDER_ID BIGINT,
+    FOREIGN KEY (ORDER_ID) REFERENCES ORDERS (ID)
+);
+
+CREATE TABLE ORDER_ITEMS
+(
+    ID               BIGINT PRIMARY KEY,
+    ORDER_ID         BIGINT,
+    PRODUCT_ID       BIGINT,
+    QUANTITY         INT,
+    SUB_TOTAL_AMOUNT DECIMAL,
+    FOREIGN KEY (ORDER_ID) REFERENCES ORDERS (ID),
+    FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS (ID)
 );
