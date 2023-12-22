@@ -1,25 +1,52 @@
 package com.example.demo.application.usecase.order;
 
 import com.example.demo.application.usecase.Usecase;
-import com.example.demo.domain.model.order.Order;
-import com.example.demo.domain.model.valueobject.OrderId;
-import com.example.demo.domain.repository.order.OrderRepository;
+import com.example.demo.domain.queryservice.order.OrderDetailsResult;
+import com.example.demo.domain.queryservice.order.OrderQueryService;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class FetchOrderUsecase extends Usecase<Long, Order> {
+public class FetchOrderUsecase extends Usecase<Long, FetchOrderOutput> {
 
-    private final OrderRepository orderRepository;
+    private final OrderQueryService orderQueryService;
 
-    public FetchOrderUsecase(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    public FetchOrderUsecase(OrderQueryService orderQueryService) {
+        this.orderQueryService = orderQueryService;
     }
 
     @Override
-    public Order execute(Long orderId) {
-        Optional<Order> order = orderRepository.findById(new OrderId(orderId));
-        return order.orElse(null);
+    public FetchOrderOutput execute(Long orderId) throws IOException {
+        // 注文IDを使用して、注文を検索する
+        List<OrderDetailsResult> results = orderQueryService.findOrderDetailsById(orderId);
+
+        // 結果が空の場合は、例外を投げるか、または適切な処理を行う
+        if (results.isEmpty()) {
+            throw new RuntimeException("Order not found");
+        }
+
+        // 最初のOrderDetailsResultを取得（全てのアイテムで共通のフィールドを持っていると仮定）
+        OrderDetailsResult firstResult = results.get(0);
+
+        // Stream APIを使用してOrderItemOutputリストを作成
+        List<FetchOrderOutput.OrderItemOutput> orderItems = results.stream()
+                .map(result -> new FetchOrderOutput.OrderItemOutput(
+                        result.productName(),
+                        result.productPrice(),
+                        result.quantity(),
+                        result.subTotalAmount()))
+                .collect(Collectors.toList());
+
+        // FetchOrderOutputオブジェクトを作成して返す
+        return new FetchOrderOutput(
+                firstResult.id(),
+                firstResult.orderDate(),
+                firstResult.totalAmount(),
+                orderItems
+        );
     }
+
 }

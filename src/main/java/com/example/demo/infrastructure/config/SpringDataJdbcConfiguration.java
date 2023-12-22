@@ -2,10 +2,7 @@ package com.example.demo.infrastructure.config;
 
 import com.example.demo.domain.model.task.TaskStatus;
 import com.example.demo.domain.model.valueobject.*;
-import com.example.demo.infrastructure.converter.AmountToDecimal;
-import com.example.demo.infrastructure.converter.EnumToInteger;
-import com.example.demo.infrastructure.converter.GenericIdToBigInt;
-import com.example.demo.infrastructure.converter.QuantityToInteger;
+import com.example.demo.infrastructure.converter.*;
 import io.micrometer.common.lang.NonNullApi;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
@@ -28,6 +25,7 @@ public class SpringDataJdbcConfiguration extends AbstractJdbcConfiguration {
                 new GenericIdToBigInt<SubTaskId>(),
                 new GenericIdToBigInt<UserId>(),
                 new AmountToDecimal(),
+                new PriceToDecimal(),
                 new QuantityToInteger()
         ));
     }

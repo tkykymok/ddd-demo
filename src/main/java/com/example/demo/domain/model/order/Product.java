@@ -9,8 +9,6 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table(name = "PRODUCTS")
 public class Product extends BaseEntity<ProductId> {
     private String name;
-
-    @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL)
     private Price price;
 
     private Product() {}

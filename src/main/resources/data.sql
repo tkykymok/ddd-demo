@@ -22,17 +22,17 @@ VALUES (2, 'Jane Smith', 'jane.smith@example.com');
 
 -- Orderテーブルへのサンプルデータ挿入
 INSERT INTO ORDERS (ID, USER_ID, ORDER_DATE, TOTAL_AMOUNT)
-VALUES (1, 1, '2023-01-01', 1500.00),
-       (2, 2, '2023-01-02', 2000.00);
+VALUES (1, 1, '2023-01-01', 2000.00),
+       (2, 2, '2023-01-02', 1500.00);
 
 -- Productテーブルへのサンプルデータ挿入
-INSERT INTO PRODUCTS (ID, NAME, PRICE, ORDER_ID)
-VALUES (1, '商品A', 500.00, 1),
-       (2, '商品B', 1000.00, 1),
-       (3, '商品C', 1500.00, 2);
+INSERT INTO PRODUCTS (ID, NAME, PRICE)
+VALUES (1, '商品A', 500.00),
+       (2, '商品B', 1000.00),
+       (3, '商品C', 1500.00);
 
 -- OrderItemテーブルへのサンプルデータ挿入
 INSERT INTO ORDER_ITEMS (ID, ORDER_ID, PRODUCT_ID, QUANTITY, SUB_TOTAL_AMOUNT)
 VALUES (1, 1, 1, 2, 1000.00),
-       (2, 1, 2, 1, 500.00),
-       (3, 2, 3, 1, 750.00);
+       (2, 1, 2, 1, 1000.00),
+       (3, 2, 3, 1, 1500.00);
