@@ -9,8 +9,6 @@ import java.util.List;
 public record FetchOrderOutput(Long id, LocalDate orderDate, BigDecimal totalAmount,
                                List<OrderItemOutput> orderItems) {
 
-
-
     public record OrderItemOutput(String productName, BigDecimal productPrice, Integer quantity, BigDecimal subTotalAmount) {
     }
 }

@@ -14,6 +14,15 @@ public class OrderItem extends BaseEntity<OrderItemId> {
     private OrderItem() {
     }
 
+    public static OrderItem create(OrderId orderId, Product product, Quantity quantity) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.orderId = orderId;
+        orderItem.productId = product.getId();
+        orderItem.quantity = quantity;
+        orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(product.getPrice(), quantity);
+        return orderItem;
+    }
+
     public OrderId getOrderId() {
         return orderId;
     }

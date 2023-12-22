@@ -6,7 +6,15 @@ import java.math.BigDecimal;
 
 
 public record Amount(BigDecimal value) implements ValueObject {
+    public static Amount of(int i) {
+        return new Amount(BigDecimal.valueOf(i));
+    }
+
     public Amount add(Amount other) {
         return new Amount(this.value.add(other.value()));
+    }
+
+    public static Amount calculateTotalFromPriceAndQuantity(Price price, Quantity quantity) {
+        return new Amount(price.value().multiply(BigDecimal.valueOf(quantity.value())));
     }
 }

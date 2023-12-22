@@ -1,13 +1,12 @@
 package com.example.demo.domain.model.order;
 
 import com.example.demo.domain.model.AggregateRoot;
-import com.example.demo.domain.model.valueobject.Amount;
-import com.example.demo.domain.model.valueobject.OrderId;
-import com.example.demo.domain.model.valueobject.UserId;
+import com.example.demo.domain.model.valueobject.*;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "ORDERS")
@@ -19,6 +18,21 @@ public class Order extends AggregateRoot<OrderId>{
     private List<OrderItem> orderItems;
 
     private Order() {}
+
+    public static Order create(UserId userId) {
+        Order order = new Order();
+        order.userId = userId;
+        order.orderDate = LocalDate.now();
+        order.totalAmount = Amount.of(0);
+        order.orderItems = new ArrayList<>();
+        return order;
+    }
+
+    public void addOrderItem(Product product, Quantity quantity) {
+        OrderItem orderItem = OrderItem.create(this.getId(), product, quantity);
+        this.orderItems.add(orderItem);
+        this.totalAmount = this.totalAmount.add(orderItem.getSubTotalAmount());
+    }
 
     public UserId getUserId() {
         return userId;
@@ -36,4 +50,7 @@ public class Order extends AggregateRoot<OrderId>{
         return orderItems;
     }
 
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
 }

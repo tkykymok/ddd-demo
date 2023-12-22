@@ -1,25 +1,34 @@
 package com.example.demo.application.usecase.order;
 
 import com.example.demo.application.usecase.Usecase;
+import com.example.demo.domain.model.order.Order;
+import com.example.demo.domain.model.valueobject.OrderId;
 import com.example.demo.domain.queryservice.order.OrderDetailsResult;
 import com.example.demo.domain.queryservice.order.OrderQueryService;
+import com.example.demo.domain.repository.order.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class FetchOrderUsecase extends Usecase<Long, FetchOrderOutput> {
 
     private final OrderQueryService orderQueryService;
+    private final OrderRepository orderRepository;
 
-    public FetchOrderUsecase(OrderQueryService orderQueryService) {
+    public FetchOrderUsecase(OrderQueryService orderQueryService, OrderRepository orderRepository) {
         this.orderQueryService = orderQueryService;
+        this.orderRepository = orderRepository;
     }
 
     @Override
     public FetchOrderOutput execute(Long orderId) throws IOException {
+        Optional<Order> order = orderRepository.findById(new OrderId(orderId));
+
+
         // 注文IDを使用して、注文を検索する
         List<OrderDetailsResult> results = orderQueryService.findOrderDetailsById(orderId);
 
