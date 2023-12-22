@@ -1,18 +1,14 @@
 package com.example.demo.domain.model.order;
 
 import com.example.demo.domain.model.BaseEntity;
-import com.example.demo.domain.model.valueobject.Amount;
-import com.example.demo.domain.model.valueobject.OrderId;
-import com.example.demo.domain.model.valueobject.OrderItemId;
-import com.example.demo.domain.model.valueobject.ProductId;
-import org.springframework.data.relational.core.mapping.Embedded;
+import com.example.demo.domain.model.valueobject.*;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "ORDER_ITEMS")
 public class OrderItem extends BaseEntity<OrderItemId> {
     private OrderId orderId;
     private ProductId productId;
-    private Integer quantity;
+    private Quantity quantity;
     private Amount subTotalAmount;
 
     private OrderItem() {
@@ -26,7 +22,7 @@ public class OrderItem extends BaseEntity<OrderItemId> {
         return productId;
     }
 
-    public Integer getQuantity() {
+    public Quantity getQuantity() {
         return quantity;
     }
 
