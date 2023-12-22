@@ -1,6 +1,10 @@
 package com.example.demo.domain.model.order;
 
 import com.example.demo.domain.model.AggregateRoot;
+import com.example.demo.domain.model.valueobject.Amount;
+import com.example.demo.domain.model.valueobject.OrderId;
+import com.example.demo.domain.model.valueobject.UserId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
@@ -9,8 +13,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Table(name = "ORDERS")
-public class Order extends AggregateRoot {
-    private Long userId;
+public class Order extends AggregateRoot<OrderId>{
+
+    @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL, prefix = "USER_")
+    private UserId userId;
 
     private LocalDate orderDate;
 
@@ -22,7 +28,7 @@ public class Order extends AggregateRoot {
 
     private Order() {}
 
-    public Long getUserId() {
+    public UserId getUserId() {
         return userId;
     }
 

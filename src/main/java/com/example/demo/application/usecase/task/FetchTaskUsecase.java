@@ -2,6 +2,7 @@ package com.example.demo.application.usecase.task;
 
 import com.example.demo.application.usecase.Usecase;
 import com.example.demo.domain.model.task.Task;
+import com.example.demo.domain.model.valueobject.TaskId;
 import com.example.demo.domain.repository.task.TaskRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class FetchTaskUsecase extends Usecase<Long, Task> {
     @Override
     public Task execute(Long taskId) {
         // タスクの取得
-        Optional<Task> task = taskRepository.findById(taskId);
+        Optional<Task> task = taskRepository.findById(new TaskId(taskId));
         // タスクが存在しない場合はnullを返す
         return task.orElse(null);
     }

@@ -2,6 +2,7 @@ package com.example.demo.application.usecase.order;
 
 import com.example.demo.application.usecase.Usecase;
 import com.example.demo.domain.model.order.Order;
+import com.example.demo.domain.model.valueobject.OrderId;
 import com.example.demo.domain.repository.order.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class FetchOrderUsecase extends Usecase<Long, Order> {
 
     @Override
     public Order execute(Long orderId) {
-        Optional<Order> order = orderRepository.findById(orderId);
+        Optional<Order> order = orderRepository.findById(new OrderId(orderId));
         return order.orElse(null);
     }
 }

@@ -3,13 +3,13 @@ package com.example.demo.domain.model.task;
 import java.time.LocalDateTime;
 
 import com.example.demo.domain.model.BaseEntity;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
+import com.example.demo.domain.model.valueobject.SubTaskId;
+import com.example.demo.domain.model.valueobject.TaskId;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "SUB_TASKS")
-public class SubTask extends BaseEntity {
-    private Long parentId;
+public class SubTask extends BaseEntity<SubTaskId> {
+    private TaskId parentId;
     private String title;
     private String content;
     private TaskStatus status;
@@ -20,7 +20,7 @@ public class SubTask extends BaseEntity {
 
 
     // ファクトリーメソッド
-    public static SubTask create(Long parentId, String title, String content) {
+    public static SubTask create(TaskId parentId, String title, String content) {
         SubTask subTask = new SubTask();
         subTask.parentId = parentId;
         subTask.title = title;
@@ -30,7 +30,7 @@ public class SubTask extends BaseEntity {
         return subTask;
     }
 
-    public Long getParentId() {
+    public TaskId getParentId() {
         return parentId;
     }
 

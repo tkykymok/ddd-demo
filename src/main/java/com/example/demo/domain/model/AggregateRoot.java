@@ -1,4 +1,4 @@
 package com.example.demo.domain.model;
 
-public abstract class AggregateRoot extends BaseEntity {
+public abstract class AggregateRoot<ID> extends BaseEntity<ID> {
 }
