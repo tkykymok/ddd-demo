@@ -4,15 +4,13 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 
 @ReadingConverter
-public class Integer2Enum<E extends Enum> implements Converter<Integer, E> {
-    private final Class<E> type;
+public class IntegerToEnum<E extends Enum<E>> implements Converter<Integer, E> {
     private final E[] enums;
 
-    public Integer2Enum(Class<E> type) {
+    public IntegerToEnum(Class<E> type) {
         if (type == null) {
             throw new IllegalArgumentException("Type argument cannot be null");
         }
-        this.type = type;
         this.enums = type.getEnumConstants();
         if (this.enums == null) {
             throw new IllegalArgumentException(type.getSimpleName() + " does not represent an enum type.");
@@ -21,10 +19,10 @@ public class Integer2Enum<E extends Enum> implements Converter<Integer, E> {
 
     @Override
     public E convert(Integer i) {
-        return toOrdinalEnum(i);
+        return convertToEnum(i);
     }
 
-    private E toOrdinalEnum(int ordinal) {
+    private E convertToEnum(int ordinal) {
         try {
             return enums[ordinal];
         } catch (Exception ex) {

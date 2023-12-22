@@ -7,11 +7,9 @@ import org.springframework.data.jdbc.core.mapping.JdbcValue;
 import java.sql.JDBCType;
 
 @WritingConverter
-public enum Enum2Integer implements Converter<Enum, JdbcValue> {
-    INSTANCE;
-
+public class EnumToInteger<T extends Enum<T>> implements Converter<Enum<T>, JdbcValue> {
     @Override
-    public JdbcValue convert(Enum anEnum) {
+    public JdbcValue convert(Enum<T> anEnum) {
         return JdbcValue.of(anEnum.ordinal(), JDBCType.INTEGER);
     }
 }

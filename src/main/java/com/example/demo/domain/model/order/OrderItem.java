@@ -10,17 +10,10 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "ORDER_ITEMS")
 public class OrderItem extends BaseEntity<OrderItemId> {
-
     private OrderId orderId;
-
-//    @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL, prefix = "PRODUCT_")
     private ProductId productId;
-
     private Integer quantity;
-
-    @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL, prefix = "SUB_TOTAL_")
     private Amount subTotalAmount;
-
 
     private OrderItem() {
     }

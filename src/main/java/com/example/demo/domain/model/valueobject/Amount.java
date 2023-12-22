@@ -5,13 +5,8 @@ import com.example.demo.domain.model.ValueObject;
 import java.math.BigDecimal;
 
 
-public record Amount(BigDecimal amount) implements ValueObject {
-
-    public Amount(BigDecimal amount) {
-        this.amount = amount != null ? amount : BigDecimal.ZERO;
-    }
-
+public record Amount(BigDecimal value) implements ValueObject {
     public Amount add(Amount other) {
-        return new Amount(this.amount.add(other.amount()));
+        return new Amount(this.value.add(other.value()));
     }
 }

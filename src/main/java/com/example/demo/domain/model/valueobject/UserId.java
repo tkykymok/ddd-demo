@@ -1,8 +1,7 @@
 package com.example.demo.domain.model.valueobject;
 
+import com.example.demo.domain.model.BaseId;
 import com.example.demo.domain.model.ValueObject;
 
-import java.io.Serializable;
-
-public record UserId(Long value) implements ValueObject, Serializable {
+public record UserId(Long value) implements BaseId<Long>, ValueObject {
 }
