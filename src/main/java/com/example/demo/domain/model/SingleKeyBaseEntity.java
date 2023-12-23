@@ -5,11 +5,11 @@ import org.springframework.data.relational.core.mapping.Embedded;
 
 import javax.annotation.processing.Generated;
 
-public abstract class BaseEntity<ID> {
+public abstract class SingleKeyBaseEntity<ID> {
     @Id
     private ID id;
 
-    protected BaseEntity() {}
+    protected SingleKeyBaseEntity() {}
 
     public ID getId() {
         return id;

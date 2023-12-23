@@ -28,7 +28,7 @@ public class SpringDataJdbcConfiguration extends AbstractJdbcConfiguration {
                 new PriceToDecimal(),
                 new QuantityToInteger(),
                 new SeqNoToInteger(),
-                new LongToOrderItemId()
+                new LongToOrderItemKey()
         ));
     }
 }

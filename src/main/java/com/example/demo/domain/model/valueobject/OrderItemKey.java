@@ -4,7 +4,7 @@ import com.example.demo.domain.model.ValueObject;
 
 import java.io.Serializable;
 
-public record OrderItemId(
+public record OrderItemKey(
         OrderId orderId,
         SeqNo seqNo
 ) implements Serializable, ValueObject {

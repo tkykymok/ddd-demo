@@ -1,6 +1,6 @@
 package com.example.demo.domain.model.task;
 
-import com.example.demo.domain.model.BaseEntity;
+import com.example.demo.domain.model.SingleKeyBaseEntity;
 import com.example.demo.domain.model.valueobject.TaskId;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Table(name = "TASKS")
-public class Task extends BaseEntity<TaskId> {
+public class Task extends SingleKeyBaseEntity<TaskId> {
     private String title;
     private String content;
     private TaskStatus status;
