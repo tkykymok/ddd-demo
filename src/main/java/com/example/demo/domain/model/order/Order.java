@@ -6,7 +6,7 @@ import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Table(name = "ORDERS")
@@ -14,8 +14,8 @@ public class Order extends AggregateRoot<OrderId>{
     private UserId userId;
     private LocalDate orderDate;
     private Amount totalAmount;
-    @MappedCollection(idColumn = "ORDER_ID", keyColumn = "ORDER_ID")
-    private Set<OrderItem> orderItems = new HashSet<>();
+    @MappedCollection(idColumn = "ORDER_ID")
+    private Set<OrderItem> orderItems = new LinkedHashSet<>();
 
     private Order() {}
 
@@ -56,9 +56,5 @@ public class Order extends AggregateRoot<OrderId>{
 
     public Set<OrderItem> getOrderItems() {
         return orderItems;
-    }
-
-    public void setOrderItems(Set<OrderItem> orderItems) {
-        this.orderItems = orderItems;
     }
 }

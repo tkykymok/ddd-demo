@@ -2,13 +2,14 @@ package com.example.demo.domain.model.order;
 
 import com.example.demo.domain.model.SingleKeyBaseEntity;
 import com.example.demo.domain.model.valueobject.*;
+import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "ORDER_ITEMS")
 public class OrderItem extends SingleKeyBaseEntity<OrderItemId> {
     private OrderId orderId;
     private SeqNo seqNo;
-    private ProductId productId;
+    private AggregateReference<Product, ProductId> productId;
     private Quantity quantity;
     private Amount subTotalAmount;
 
@@ -19,7 +20,7 @@ public class OrderItem extends SingleKeyBaseEntity<OrderItemId> {
         OrderItem orderItem = new OrderItem();
         orderItem.orderId = orderId;
         orderItem.seqNo = seqNo;
-        orderItem.productId = product.getId();
+        orderItem.productId = AggregateReference.to(product.getId());
         orderItem.quantity = quantity;
         orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(product.getPrice(), quantity);
         return orderItem;
@@ -34,7 +35,7 @@ public class OrderItem extends SingleKeyBaseEntity<OrderItemId> {
     }
 
     public ProductId getProductId() {
-        return productId;
+        return productId.getId();
     }
 
     public Quantity getQuantity() {

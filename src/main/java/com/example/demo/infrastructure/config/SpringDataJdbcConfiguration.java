@@ -1,5 +1,6 @@
 package com.example.demo.infrastructure.config;
 
+import com.example.demo.domain.model.order.Product;
 import com.example.demo.domain.model.task.TaskStatus;
 import com.example.demo.domain.model.valueobject.*;
 import com.example.demo.infrastructure.converter.*;
@@ -21,6 +22,7 @@ public class SpringDataJdbcConfiguration extends AbstractJdbcConfiguration {
                 new GenericIdToBigInt<OrderId>(),
                 new GenericIdToBigInt<OrderItemId>(),
                 new GenericIdToBigInt<ProductId>(),
+                new AggregateRefIdToBigInt<Product, ProductId>(),
                 new GenericIdToBigInt<TaskId>(),
                 new GenericIdToBigInt<SubTaskId>(),
                 new GenericIdToBigInt<UserId>(),
