@@ -26,6 +26,17 @@ public class OrderItem extends SingleKeyBaseEntity<OrderItemId> {
         return orderItem;
     }
 
+    public static OrderItem update(OrderItemId id, OrderId orderId, SeqNo seqNo, Product product, Quantity quantity) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.id = id;
+        orderItem.orderId = orderId;
+        orderItem.seqNo = seqNo;
+        orderItem.productId = AggregateReference.to(product.getId());
+        orderItem.quantity = quantity;
+        orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(product.getPrice(), quantity);
+        return orderItem;
+    }
+
     public OrderId getOrderId() {
         return orderId;
     }

@@ -1,9 +1,8 @@
 package com.example.demo.presentation.controller;
 
-import com.example.demo.application.usecase.order.CreateOrderInput;
-import com.example.demo.application.usecase.order.CreateOrderUsecase;
-import com.example.demo.application.usecase.order.FetchOrderUsecase;
-import com.example.demo.presentation.web.request.CreateOrderRequest;
+import com.example.demo.application.usecase.order.*;
+import com.example.demo.presentation.web.request.order.CreateOrderRequest;
+import com.example.demo.presentation.web.request.order.UpdateOrderRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +16,12 @@ public class OrderController {
 
     private final FetchOrderUsecase fetchOrderUsecase;
     private final CreateOrderUsecase createOrderUsecase;
+    private final UpdateOrderUsecase updateOrderUsecase;
 
-    public OrderController(FetchOrderUsecase fetchOrderUsecase, CreateOrderUsecase createOrderUsecase) {
+    public OrderController(FetchOrderUsecase fetchOrderUsecase, CreateOrderUsecase createOrderUsecase, UpdateOrderUsecase updateOrderUsecase) {
         this.fetchOrderUsecase = fetchOrderUsecase;
         this.createOrderUsecase = createOrderUsecase;
+        this.updateOrderUsecase = updateOrderUsecase;
     }
 
     @GetMapping("/{orderId}")
@@ -30,15 +31,33 @@ public class OrderController {
     }
 
     @PostMapping("/create-order")
-    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest request) throws IOException {
+    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest request) {
 
-        List<CreateOrderInput.OrderItem> orderItems = request.orderItems().stream().map(
-                orderItem -> new CreateOrderInput.OrderItem(orderItem.productId(), orderItem.quantity())
+        List<OrderItemInput> orderItems = request.orderItems().stream()
+                .map(orderItem -> new OrderItemInput(
+                        null,
+                        orderItem.productId(),
+                        orderItem.quantity()
+                )
         ).collect(Collectors.toList());
 
         CreateOrderInput input = new CreateOrderInput(1L, orderItems);
         return ResponseEntity.ok(createOrderUsecase.execute(input));
     }
 
+    @PutMapping("/update-order/{orderId}")
+    public ResponseEntity<?> updateOrder(@PathVariable Long orderId,
+                                         @RequestBody UpdateOrderRequest request) {
 
+        List<OrderItemInput> orderItems = request.orderItems().stream().map(
+                orderItem -> new OrderItemInput(
+                        orderItem.orderItemId(),
+                        orderItem.productId(),
+                        orderItem.quantity()
+                )
+        ).collect(Collectors.toList());
+
+        UpdateOrderInput input = new UpdateOrderInput(1L, orderId, request.version(), orderItems);
+        return ResponseEntity.ok(updateOrderUsecase.execute(input));
+    }
 }

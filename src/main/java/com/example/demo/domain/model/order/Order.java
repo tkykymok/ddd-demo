@@ -2,6 +2,7 @@ package com.example.demo.domain.model.order;
 
 import com.example.demo.domain.model.AggregateRoot;
 import com.example.demo.domain.model.valueobject.*;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -14,8 +15,10 @@ public class Order extends AggregateRoot<OrderId>{
     private UserId userId;
     private LocalDate orderDate;
     private Amount totalAmount;
+    @Version
+    private Long version;
     @MappedCollection(idColumn = "ORDER_ID")
-    private Set<OrderItem> orderItems = new LinkedHashSet<>();
+    private Set<OrderItem> orderItems;
 
     private Order() {}
 
@@ -24,15 +27,22 @@ public class Order extends AggregateRoot<OrderId>{
         order.userId = userId;
         order.orderDate = LocalDate.now();
         order.totalAmount = Amount.of(0);
+        order.orderItems = new LinkedHashSet<>();
         return order;
     }
 
-    public void addOrderItem(Product product, Quantity quantity) {
+    public void addOrderItem(OrderItemId id, Product product, Quantity quantity) {
         SeqNo seqNo = SeqNo.of(this.orderItems.size() + 1);
 
-        OrderItem orderItem = OrderItem.create(this.getId(), seqNo, product, quantity);
+        OrderItem orderItem = id.value() == null
+                ? OrderItem.create(this.getId(), seqNo, product, quantity)
+                : OrderItem.update(id, this.getId(), seqNo, product, quantity);
         this.orderItems.add(orderItem);
         calculateTotalAmount();
+    }
+
+    public void clearOrderItems() {
+        this.orderItems.clear();
     }
 
     private void calculateTotalAmount() {

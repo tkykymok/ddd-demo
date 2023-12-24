@@ -4,4 +4,7 @@ import com.example.demo.domain.model.BaseId;
 import com.example.demo.domain.model.ValueObject;
 
 public record TaskId(Long value) implements BaseId<Long>, ValueObject {
+    public static TaskId of(Long value) {
+        return new TaskId(value);
+    }
 }

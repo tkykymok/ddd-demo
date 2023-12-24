@@ -3,12 +3,11 @@ package com.example.demo.application.usecase.order;
 import com.example.demo.application.usecase.Usecase;
 import com.example.demo.domain.model.order.Order;
 import com.example.demo.domain.model.order.Product;
+import com.example.demo.domain.model.valueobject.OrderId;
 import com.example.demo.domain.model.valueobject.OrderItemId;
 import com.example.demo.domain.model.valueobject.ProductId;
 import com.example.demo.domain.model.valueobject.Quantity;
-import com.example.demo.domain.model.valueobject.UserId;
 import com.example.demo.domain.repository.ProductRepository;
-import com.example.demo.domain.repository.order.OrderItemRepository;
 import com.example.demo.domain.repository.order.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,47 +17,44 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class CreateOrderUsecase extends Usecase<CreateOrderInput, Void> {
+public class UpdateOrderUsecase extends Usecase<UpdateOrderInput, Void> {
 
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
 
-    public CreateOrderUsecase(OrderRepository orderRepository, OrderItemRepository orderItemRepository, ProductRepository productRepository) {
+    public UpdateOrderUsecase(OrderRepository orderRepository, ProductRepository productRepository) {
         this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
         this.productRepository = productRepository;
     }
 
     @Override
     @Transactional
-    public Void execute(CreateOrderInput input) {
+    public Void execute(UpdateOrderInput input) {
 
-        Order createdOrder = createAndPersistOrder(input.userId());
+        // 注文IDを使用して、注文を検索する
+        Order order = orderRepository.findByIdAndVersion(OrderId.of(input.orderId()), input.version())
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
         List<ProductId> productIds = extractProductIdsFromOrder(input);
 
         Map<ProductId, Product> products = fetchProductsByIds(productIds);
 
+        // 注文アイテムをクリアして、新しいアイテムを追加する
+        order.clearOrderItems();
         input.orderItems()
                 .forEach(orderItem -> {
-                    createdOrder.addOrderItem(
+                    order.addOrderItem(
                             OrderItemId.of(orderItem.orderItemId()),
-                            products.get(new ProductId(orderItem.productId())),
+                            products.get(ProductId.of(orderItem.productId())),
                             Quantity.of(orderItem.quantity())
                     );
                 });
 
-        orderRepository.save(createdOrder);
+        orderRepository.save(order);
         return null;
     }
 
-    private Order createAndPersistOrder(Long userId) {
-        Order order = Order.create(new UserId(userId));
-        return orderRepository.save(order);
-    }
-
-    private List<ProductId> extractProductIdsFromOrder(CreateOrderInput input) {
+    private List<ProductId> extractProductIdsFromOrder(UpdateOrderInput input) {
         return input.orderItems().stream()
                 .map(orderItem -> new ProductId(orderItem.productId()))
                 .toList();
@@ -66,6 +62,7 @@ public class CreateOrderUsecase extends Usecase<CreateOrderInput, Void> {
 
     private Map<ProductId, Product> fetchProductsByIds(List<ProductId> productIds) {
         return productRepository.findAllById(productIds).stream()
-                .collect(Collectors.toMap(product -> new ProductId(product.getId().value()), product -> product));
+                .collect(Collectors.toMap(product
+                        -> new ProductId(product.getId().value()), product -> product));
     }
 }

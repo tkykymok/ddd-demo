@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
 
 public abstract class SingleKeyBaseEntity<ID> {
     @Id
-    private ID id;
+    protected ID id;
 
     protected SingleKeyBaseEntity() {}
 

@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 
 public record Amount(BigDecimal value) implements ValueObject {
-    public static Amount of(int i) {
+    public static Amount of(double i) {
         return new Amount(BigDecimal.valueOf(i));
     }
 

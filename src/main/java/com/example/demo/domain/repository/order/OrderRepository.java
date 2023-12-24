@@ -9,5 +9,6 @@ import org.springframework.lang.NonNull;
 import java.util.Optional;
 
 public interface OrderRepository extends ListCrudRepository<Order, OrderId> {
-
+    // 主キーとバージョンでOrderを検索するカスタムメソッド
+    Optional<Order> findByIdAndVersion(OrderId id, Long version);
 }
