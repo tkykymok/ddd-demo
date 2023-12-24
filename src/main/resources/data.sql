@@ -32,7 +32,7 @@ VALUES (1, '商品A', 500.00),
        (3, '商品C', 1500.00);
 
 -- OrderItemテーブルへのサンプルデータ挿入
-INSERT INTO ORDER_ITEMS (ORDER_ID, SEQ_NO, PRODUCT_ID, QUANTITY, SUB_TOTAL_AMOUNT)
-VALUES (1, 1, 1, 2, 1000.00),
-       (1, 2, 2, 1, 1000.00),
-       (2, 1, 3, 1, 1500.00);
+INSERT INTO ORDER_ITEMS (ID, ORDER_ID, SEQ_NO, PRODUCT_ID, QUANTITY, SUB_TOTAL_AMOUNT)
+VALUES (100, 1, 1, 1, 2, 1000.00),
+       (101, 1, 2, 2, 1, 1000.00),
+       (102, 2, 3, 3, 1, 1500.00);

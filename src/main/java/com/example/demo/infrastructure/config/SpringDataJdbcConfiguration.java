@@ -19,7 +19,7 @@ public class SpringDataJdbcConfiguration extends AbstractJdbcConfiguration {
         return new JdbcCustomConversions(Arrays.asList(
                 new EnumToInteger<TaskStatus>(),
                 new GenericIdToBigInt<OrderId>(),
-//                new GenericIdToBigInt<OrderItemId>(),
+                new GenericIdToBigInt<OrderItemId>(),
                 new GenericIdToBigInt<ProductId>(),
                 new GenericIdToBigInt<TaskId>(),
                 new GenericIdToBigInt<SubTaskId>(),
