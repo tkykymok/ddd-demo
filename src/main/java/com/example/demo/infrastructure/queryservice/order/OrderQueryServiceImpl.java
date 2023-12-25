@@ -2,7 +2,7 @@ package com.example.demo.infrastructure.queryservice.order;
 
 import com.example.demo.domain.queryservice.order.OrderDetailsResult;
 import com.example.demo.domain.queryservice.order.OrderQueryService;
-import com.example.demo.infrastructure.support.DatabaseConstants;
+import com.example.demo.infrastructure.support.DBConstants;
 import com.example.demo.infrastructure.support.SQLLoader;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -33,14 +33,16 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         parameters.addValue("orderId", orderId);
 
         // 結果セットからOrderDetailsResultオブジェクトを作成するRowMapperを定義
-        RowMapper<OrderDetailsResult> rowMapper = (rs, rowNum) -> new OrderDetailsResult(
-                rs.getLong(DatabaseConstants.ID_COLUMN),
-                rs.getDate(DatabaseConstants.ORDER_DATE_COLUMN).toLocalDate(),
-                rs.getBigDecimal(DatabaseConstants.TOTAL_AMOUNT_COLUMN),
-                rs.getString(DatabaseConstants.PRODUCT_NAME_COLUMN),
-                rs.getBigDecimal(DatabaseConstants.PRODUCT_PRICE_COLUMN),
-                rs.getInt(DatabaseConstants.QUANTITY_COLUMN),
-                rs.getBigDecimal(DatabaseConstants.SUB_TOTAL_AMOUNT_COLUMN)
+        RowMapper<OrderDetailsResult> rowMapper = (rs, rowNum) ->
+                OrderDetailsResult.builder()
+                        .id(rs.getLong(DBConstants.ID_COLUMN))
+                        .orderDate(rs.getDate(DBConstants.ORDER_DATE_COLUMN).toLocalDate())
+                        .totalAmount(rs.getBigDecimal(DBConstants.TOTAL_AMOUNT_COLUMN))
+                        .productName(rs.getString(DBConstants.PRODUCT_NAME_COLUMN))
+                        .productPrice(rs.getBigDecimal(DBConstants.PRODUCT_PRICE_COLUMN))
+                        .quantity(rs.getInt(DBConstants.QUANTITY_COLUMN))
+                        .subTotalAmount(rs.getBigDecimal(DBConstants.SUB_TOTAL_AMOUNT_COLUMN))
+                        .build(
         );
 
         // SQLを実行し、結果を返す

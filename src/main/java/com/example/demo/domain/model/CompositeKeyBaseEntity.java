@@ -2,6 +2,7 @@ package com.example.demo.domain.model;
 
 import org.springframework.data.relational.core.mapping.Embedded;
 
+@Deprecated
 public abstract class CompositeKeyBaseEntity<KEY> {
     @Embedded.Nullable
     protected KEY key;

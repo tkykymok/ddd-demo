@@ -1,6 +1,6 @@
 package com.example.demo.infrastructure.support;
 
-public class DatabaseConstants {
+public class DBConstants {
     public static final String ID_COLUMN = "ID";
     public static final String ORDER_DATE_COLUMN = "ORDER_DATE";
     public static final String TOTAL_AMOUNT_COLUMN = "TOTAL_AMOUNT";
