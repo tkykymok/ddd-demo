@@ -1,36 +1,61 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.0'
-	id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'nu.studer.jooq' version '5.2'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+    sourceCompatibility = '17'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	runtimeOnly 'com.h2database:h2'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.jooq:jooq:3.19.1'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'com.h2database:h2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+jooq {
+   version = '3.19.1'
+   sample(sourceSets.main) {
+        jdbc {
+            driver = 'com.microsoft.sqlserver.jdbc.SQLServerDriver'
+            url = 'jdbc:sqlserver://mssql:1433;databaseName=china_picking;encrypt=false;trustServerCertificate=true'
+            user = 'sa'
+            password = '3wL$2D4s7jiNx'
+        }
+        generator {
+            name = 'org.jooq.codegen.DefaultGenerator'
+            database {
+                name = 'org.jooq.meta.sqlserver.SQLServerDatabase'
+                inputSchema = 'ddd_demo'
+            }
+            target {
+                packageName = 'com.example.demo.infrastructure.jooq'
+                directory = 'src/main/java'
+            }
+        }
+   }
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 bootRun {
-	// デバッグ設定とメモリ設定
-	jvmArgs = [
+    jvmArgs = [
         '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005',
     ]
 }
