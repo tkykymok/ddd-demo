@@ -2,6 +2,7 @@ package com.example.demo.domain.model.order;
 
 import com.example.demo.domain.model.AggregateRoot;
 import com.example.demo.domain.model.valueobject.*;
+import lombok.Getter;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
@@ -10,14 +11,15 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Table(name = "ORDERS")
+@Getter
+@Table(name = "orders")
 public class Order extends AggregateRoot<OrderId>{
     private UserId userId;
     private LocalDate orderDate;
     private Amount totalAmount;
     @Version
     private Long version;
-    @MappedCollection(idColumn = "ORDER_ID")
+    @MappedCollection(idColumn = "order_id")
     private Set<OrderItem> orderItems;
 
     private Order() {}
@@ -52,19 +54,4 @@ public class Order extends AggregateRoot<OrderId>{
         }
     }
 
-    public UserId getUserId() {
-        return userId;
-    }
-
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public Amount getTotalAmount() {
-        return totalAmount;
-    }
-
-    public Set<OrderItem> getOrderItems() {
-        return orderItems;
-    }
 }

@@ -2,7 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'nu.studer.jooq' version '5.2'
+    id "org.flywaydb.flyway" version "10.4.1"
+    id "nu.studer.jooq" version "8.2.1"
 }
 
 group = 'com.example'
@@ -19,35 +20,75 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.jooq:jooq:3.19.1'
-    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
-    runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:12.3.0.jre17-preview'
+
+    runtimeOnly 'com.h2database:h2:2.2.220'
+
+
+    implementation 'org.jooq:jooq:3.19.1'
+    runtimeOnly 'org.flywaydb:flyway-core'
+
+    jooqGenerator 'com.h2database:h2:2.2.220'
+    jooqGenerator 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 }
 
+flyway {
+    url = 'jdbc:h2:mem:testdb;MODE=MSSQLServer;DB_CLOSE_DELAY=-1'
+    user = 'sa'
+    password = ''
+}
+
 jooq {
-   version = '3.19.1'
-   sample(sourceSets.main) {
-        jdbc {
-            driver = 'com.microsoft.sqlserver.jdbc.SQLServerDriver'
-            url = 'jdbc:sqlserver://mssql:1433;databaseName=china_picking;encrypt=false;trustServerCertificate=true'
-            user = 'sa'
-            password = '3wL$2D4s7jiNx'
-        }
-        generator {
-            name = 'org.jooq.codegen.DefaultGenerator'
-            database {
-                name = 'org.jooq.meta.sqlserver.SQLServerDatabase'
-                inputSchema = 'ddd_demo'
+    version = '3.19.1'
+    configurations {
+        main {
+            generationTool {
+                jdbc {
+                    url = 'jdbc:h2:mem:testdb;MODE=MSSQLServer;DB_CLOSE_DELAY=-1'
+                    user = 'sa'
+                    password = ''
+                }
+                generator {
+                    name = "org.jooq.codegen.JavaGenerator"
+                    database {
+                        name = "org.jooq.meta.h2.H2Database"
+                        // Assuming you have a similar schema setup in H2 for code generation
+                        inputSchema = 'PUBLIC'
+                        includes = '.*'
+                        excludes = 'flyway_schema_history'
+                    }
+                    target {
+                        packageName = "com.example.demo.infrastructure.jooq"
+                        directory = "${project.buildDir}/generated/source/jooq/main"
+                    }
+//                    generate {
+//                        deprecated = false
+//                        records = true
+//                        immutablePojos = true
+//                        fluentSetters = true
+//                    }
+                }
             }
-            target {
-                packageName = 'com.example.demo.infrastructure.jooq'
-                directory = 'src/main/java'
-            }
         }
-   }
+    }
+}
+
+tasks.register('runMigrateAndGenerateJooq') {
+    doFirst {
+        // Flywayマイグレーションを実行
+        gradle.startParameter.taskNames = ['flywayMigrate']
+        gradle.run()
+    }
+    doLast {
+        // jOOQコード生成を実行
+        gradle.startParameter.taskNames = ['generateJooq']
+        gradle.run()
+    }
 }
 
 tasks.named('test') {
@@ -56,6 +97,6 @@ tasks.named('test') {
 
 bootRun {
     jvmArgs = [
-        '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005',
+            '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005',
     ]
 }

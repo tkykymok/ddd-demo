@@ -7,109 +7,111 @@ GO
 USE ddd_demo;
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TASKS')
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'tasks')
 BEGIN
-CREATE TABLE TASKS
+CREATE TABLE tasks
 (
-    ID         BIGINT PRIMARY KEY IDENTITY(1,1),
-    TITLE      VARCHAR(255),
-    CONTENT    TEXT,
-    STATUS     INT NOT NULL,
-    CREATED_AT DATETIME
+    id         BIGINT PRIMARY KEY,
+    title      NVARCHAR(255),
+    content    NVARCHAR(255),
+    status     INT NOT NULL,
+    created_at DATETIME
 );
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'SUB_TASKS')
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'sub_tasks')
 BEGIN
-CREATE TABLE SUB_TASKS
+CREATE TABLE sub_tasks
 (
-    ID         BIGINT PRIMARY KEY IDENTITY(1,1),
-    PARENT_ID  BIGINT,
-    TITLE      VARCHAR(255),
-    CONTENT    TEXT,
-    STATUS     INT NOT NULL,
-    CREATED_AT DATETIME,
-    FOREIGN KEY (PARENT_ID) REFERENCES TASKS (ID)
+    id         BIGINT PRIMARY KEY,
+    parent_id  BIGINT,
+    title      NVARCHAR(255),
+    content    NVARCHAR(255),
+    status     INT NOT NULL,
+    created_at DATETIME,
+    FOREIGN KEY (parent_id) REFERENCES tasks (id)
 );
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'APP_USERS')
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'app_users')
 BEGIN
-CREATE TABLE APP_USERS
+CREATE TABLE app_users
 (
-    ID    BIGINT PRIMARY KEY IDENTITY(1,1),
-    NAME  VARCHAR(255),
-    EMAIL VARCHAR(255)
+    id    BIGINT PRIMARY KEY,
+    name  NVARCHAR(255),
+    email NVARCHAR(255)
 );
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'PRODUCTS')
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'products')
 BEGIN
-CREATE TABLE PRODUCTS
+CREATE TABLE products
 (
-    ID    BIGINT PRIMARY KEY IDENTITY(1,1),
-    NAME  VARCHAR(255),
-    PRICE DECIMAL
+    id    BIGINT PRIMARY KEY,
+    name  NVARCHAR(255),
+    price DECIMAL
 );
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ORDERS')
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'orders')
 BEGIN
-CREATE TABLE ORDERS
+CREATE TABLE orders
 (
-    ID           BIGINT PRIMARY KEY IDENTITY(1,1),
-    USER_ID      BIGINT,
-    ORDER_DATE   DATE,
-    TOTAL_AMOUNT DECIMAL,
-    VERSION      BIGINT,
-    FOREIGN KEY (USER_ID) REFERENCES APP_USERS (ID)
+    id           HIERARCHYID IDENTITY(1,1) NOT NULL,
+    user_id      BIGINT,
+    order_date   DATE,
+    total_amount DECIMAL,
+    version      BIGINT,
+    FOREIGN KEY (user_id) REFERENCES app_users (id),
+    PRIMARY KEY (id)
 );
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ORDER_ITEMS')
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'order_items')
 BEGIN
-CREATE TABLE ORDER_ITEMS
+CREATE TABLE order_items
 (
-    ID               BIGINT PRIMARY KEY IDENTITY(1,1),
-    ORDER_ID         BIGINT,
-    SEQ_NO           INT,
-    PRODUCT_ID       BIGINT,
-    QUANTITY         INT,
-    SUB_TOTAL_AMOUNT DECIMAL,
-    FOREIGN KEY (ORDER_ID) REFERENCES ORDERS (ID),
-    FOREIGN KEY (PRODUCT_ID) REFERENCES PRODUCTS (ID)
+    id               BIGINT IDENTITY(1,1) NOT NULL,
+    order_id         INTEGER,
+    seq_no           INT,
+    product_id       BIGINT,
+    quantity         INT,
+    sub_total_amount DECIMAL,
+    FOREIGN KEY (order_id) REFERENCES orders (id),
+    FOREIGN KEY (product_id) REFERENCES products (id),
+    PRIMARY KEY (id)
 );
 END
 GO
 
-INSERT INTO TASKS (ID, TITLE, CONTENT, STATUS, CREATED_AT)
-VALUES (1, '親タスク1', '親タスクの内容1', 0, CURRENT_TIMESTAMP),
-       (2, '親タスク2', '親タスクの内容2', 1, CURRENT_TIMESTAMP);
+INSERT INTO tasks (id, title, content, status, created_at)
+VALUES (1, N'親タスク1', N'親タスクの内容1', 0, CURRENT_TIMESTAMP),
+       (2, N'親タスク2', N'親タスクの内容2', 1, CURRENT_TIMESTAMP);
 
-INSERT INTO SUB_TASKS (ID, PARENT_ID, TITLE, CONTENT, STATUS, CREATED_AT)
-VALUES (101, 1, '子タスク1-1', '子タスクの内容1-1', 0, CURRENT_TIMESTAMP),
-       (102, 1, '子タスク1-2', '子タスクの内容1-2', 2, CURRENT_TIMESTAMP),
-       (201, 2, '子タスク2-1', '子タスクの内容2-1', 0, CURRENT_TIMESTAMP);
+INSERT INTO sub_tasks (id, parent_id, title, content, status, created_at)
+VALUES (101, 1, N'子タスク1-1', N'子タスクの内容1-1', 0, CURRENT_TIMESTAMP),
+       (102, 1, N'子タスク1-2', N'子タスクの内容1-2', 2, CURRENT_TIMESTAMP),
+       (201, 2, N'子タスク2-1', N'子タスクの内容2-1', 0, CURRENT_TIMESTAMP);
 
-INSERT INTO APP_USERS (ID, NAME, EMAIL)
+INSERT INTO app_users (id, name, email)
 VALUES (1, 'John Doe', 'john.doe@example.com'),
        (2, 'Jane Smith', 'jane.smith@example.com');
 
-INSERT INTO ORDERS (USER_ID, ORDER_DATE, TOTAL_AMOUNT, VERSION)
+INSERT INTO orders (user_id, order_date, total_amount, version)
 VALUES (1, '2023-01-01', 2000.00, 0),
        (2, '2023-01-02', 1500.00, 0);
 
-INSERT INTO PRODUCTS (ID, NAME, PRICE)
-VALUES (1, '商品A', 500.00),
-       (2, '商品B', 1000.00),
-       (3, '商品C', 1500.00);
+INSERT INTO products (id, name, price)
+VALUES (1, N'商品A', 500.00),
+       (2, N'商品B', 1000.00),
+       (3, N'商品C', 1500.00);
 
-INSERT INTO ORDER_ITEMS (ORDER_ID, SEQ_NO, PRODUCT_ID, QUANTITY, SUB_TOTAL_AMOUNT)
+INSERT INTO order_items (order_id, seq_no, product_id, quantity, sub_total_amount)
 VALUES (1, 1, 1, 2, 1000.00),
        (1, 2, 2, 1, 1000.00),
        (2, 3, 3, 1, 1500.00);

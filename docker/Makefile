@@ -7,3 +7,6 @@ destroy:
 remake:
 	@make destroy
 	@make init
+
+#  docker exec -it mssql-demo /bin/sh
+#  docker exec -it spring-demo /bin/sh
