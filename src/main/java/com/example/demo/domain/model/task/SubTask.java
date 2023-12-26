@@ -3,11 +3,13 @@ package com.example.demo.domain.model.task;
 import com.example.demo.domain.model.SingleKeyBaseEntity;
 import com.example.demo.domain.model.valueobject.SubTaskId;
 import com.example.demo.domain.model.valueobject.TaskId;
+import lombok.Getter;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
-@Table(name = "SUB_TASKS")
+@Getter
+@Table(name = "sub_tasks")
 public class SubTask extends SingleKeyBaseEntity<SubTaskId> {
     private TaskId parentId;
     private String title;
@@ -28,26 +30,6 @@ public class SubTask extends SingleKeyBaseEntity<SubTaskId> {
         subTask.status = TaskStatus.UNCOMPLETED;
         subTask.createdAt = LocalDateTime.now(); // 現在の日時で初期化
         return subTask;
-    }
-
-    public TaskId getParentId() {
-        return parentId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public TaskStatus getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 
 }

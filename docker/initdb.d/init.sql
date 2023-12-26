@@ -61,7 +61,7 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'orders')
 BEGIN
 CREATE TABLE orders
 (
-    id           HIERARCHYID IDENTITY(1,1) NOT NULL,
+    id           BIGINT IDENTITY(1,1) NOT NULL,
     user_id      BIGINT,
     order_date   DATE,
     total_amount DECIMAL,
@@ -77,7 +77,7 @@ BEGIN
 CREATE TABLE order_items
 (
     id               BIGINT IDENTITY(1,1) NOT NULL,
-    order_id         INTEGER,
+    order_id         BIGINT,
     seq_no           INT,
     product_id       BIGINT,
     quantity         INT,
