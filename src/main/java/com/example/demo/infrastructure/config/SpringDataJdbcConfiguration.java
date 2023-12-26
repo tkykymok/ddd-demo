@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 @Configuration
@@ -19,13 +20,15 @@ public class SpringDataJdbcConfiguration extends AbstractJdbcConfiguration {
     public JdbcCustomConversions jdbcCustomConversions() {
         return new JdbcCustomConversions(Arrays.asList(
                 new EnumToInteger<TaskStatus>(),
-                new GenericIdToBigInt<OrderId>(),
-                new GenericIdToBigInt<OrderItemId>(),
-                new GenericIdToBigInt<ProductId>(),
+                new GenericIdToBigInt<OrderId, Long>(),
+                new GenericIdToBigInt<OrderItemId, Long>(),
+                new GenericIdToBigInt<ProductId, Long>(),
                 new AggregateRefIdToBigInt<Product, ProductId>(),
-                new GenericIdToBigInt<TaskId>(),
-                new GenericIdToBigInt<SubTaskId>(),
-                new GenericIdToBigInt<UserId>(),
+                new GenericIdToBigInt<TaskId, Long>(),
+                new GenericIdToBigInt<SubTaskId, Long>(),
+                new GenericIdToBigInt<UserId, Long>(),
+                new BigDecimalToOrderId(),
+                new BigDecimalToOrderItemId(),
                 new AmountToDecimal(),
                 new PriceToDecimal(),
                 new QuantityToInteger(),
