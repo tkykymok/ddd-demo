@@ -25,6 +25,7 @@ services:
     tty: true # コンテナを終了させないために設定
     working_dir: /app # 作業ディレクトリを指定
     volumes: # マッピングを指定
+      - ../build:/app/build
       - ../src:/app/src
       - ../build.gradle:/app/build.gradle
       - ../gradlew:/app/gradlew
