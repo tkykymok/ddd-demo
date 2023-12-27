@@ -1,26 +1,20 @@
 version: '3'
 
 services:
-  mssql-demo:
-    build:
-      context: ..
-      dockerfile: docker/mssql/Dockerfile
-    user: root # ルートユーザーで実行
-    container_name: mssql-demo # コンテナ名を指定
+  postgres-demo:
+    build: # build指定を追加
+      context: .. # Dockerfileのディレクトリを指定
+      dockerfile: docker/postgres/Dockerfile # Dockerfileのパスを指定
+    container_name: postgres-demo # コンテナ名を指定
     environment: # 環境変数を設定
-      - ACCEPT_EULA=${ACCEPT_EULA}
-      - SA_PASSWORD=${SA_PASSWORD}
-      - MSSQL_PID=${MSSQL_PID}
-      - MSSQL_TCP_PORT=${MSSQL_TCP_PORT}
-      - MSSQL_LCID=${MSSQL_LCID}
-      - TZ=${TZ}
-      - MSSQL_COLLATION=${MSSQL_COLLATION}
+      - POSTGRES_USER=${POSTGRES_USER} # データベースのユーザー名
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # ユーザーのパスワード
+      - POSTGRES_DB=${POSTGRES_DB} # データベース名
     ports: # ポート番号を指定（ホスト:コンテナ）
-      - 1433:1433
+      - 5432:5432
     volumes: # マッピングを指定
-      - mssql_data:/var/opt/mssql/data # dataの永続化
-      - mssql_log:/var/opt/mssql/log # logの永続化
-      - mssql_secrets:/var/opt/mssql/secrets # secretsの永続化
+      - postgres_data:/var/lib/postgresql/data # データの永続化
+      - ./initdb.d:/docker-entrypoint-initdb.d # 初期化用SQLのマウント
   spring-demo:
     build:
       context: ..
@@ -39,9 +33,7 @@ services:
     ports: # ポート番号を指定（ホスト:コンテナ）
       - 8080:8080 # 実行用
       - 5005:5005 # デバッグ用
-    depends_on: # mssqlコンテナ起動後にspringコンテナを起動
-      - mssql-demo
+    depends_on: # postgresコンテナ起動後にspringコンテナを起動
+      - postgres-demo
 volumes:
-  mssql_data:
-  mssql_log:
-  mssql_secrets:
+  postgres_data:
