@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +25,7 @@ public class FetchOrderUsecase extends Usecase<Long, FetchOrderOutput> {
 
     @Override
     public FetchOrderOutput execute(Long orderId) throws IOException {
-        Optional<Order> order = orderRepository.findById(new OrderId(orderId));
+        Order order = orderRepository.findById(new OrderId(orderId));
 
 
         // 注文IDを使用して、注文を検索する

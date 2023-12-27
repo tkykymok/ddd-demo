@@ -11,18 +11,29 @@ import org.springframework.data.relational.core.mapping.Table;
 public class OrderItem extends SingleKeyBaseEntity<OrderItemId> {
     private OrderId orderId;
     private SeqNo seqNo;
-    private AggregateReference<Product, ProductId> productId;
+    private ProductId productId;
     private Quantity quantity;
     private Amount subTotalAmount;
 
     private OrderItem() {
     }
 
+    public static OrderItem reconstruct(OrderItemId id, OrderId orderId, SeqNo seqNo, ProductId productId, Quantity quantity, Amount subTotalAmount) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.id = id;
+        orderItem.orderId = orderId;
+        orderItem.seqNo = seqNo;
+        orderItem.productId = productId;
+        orderItem.quantity = quantity;
+        orderItem.subTotalAmount = subTotalAmount;
+        return orderItem;
+    }
+
     public static OrderItem create(OrderId orderId, SeqNo seqNo, Product product, Quantity quantity) {
         OrderItem orderItem = new OrderItem();
         orderItem.orderId = orderId;
         orderItem.seqNo = seqNo;
-        orderItem.productId = AggregateReference.to(product.getId());
+        orderItem.productId = product.getId();
         orderItem.quantity = quantity;
         orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(product.getPrice(), quantity);
         return orderItem;
@@ -33,10 +44,12 @@ public class OrderItem extends SingleKeyBaseEntity<OrderItemId> {
         orderItem.id = id;
         orderItem.orderId = orderId;
         orderItem.seqNo = seqNo;
-        orderItem.productId = AggregateReference.to(product.getId());
+        orderItem.productId = product.getId();
         orderItem.quantity = quantity;
         orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(product.getPrice(), quantity);
         return orderItem;
     }
+
+
 }
 

@@ -9,6 +9,7 @@ import com.example.demo.domain.model.valueobject.ProductId;
 import com.example.demo.domain.model.valueobject.Quantity;
 import com.example.demo.domain.repository.ProductRepository;
 import com.example.demo.domain.repository.order.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,23 +18,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UpdateOrderUsecase extends Usecase<UpdateOrderInput, Void> {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-
-    public UpdateOrderUsecase(OrderRepository orderRepository, ProductRepository productRepository) {
-        this.orderRepository = orderRepository;
-        this.productRepository = productRepository;
-    }
 
     @Override
     @Transactional
     public Void execute(UpdateOrderInput input) {
 
         // 注文IDを使用して、注文を検索する
-        Order order = orderRepository.findByIdAndVersion(OrderId.of(input.orderId()), input.version())
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = orderRepository.findByIdAndVersion(OrderId.of(input.orderId()), input.version());
 
         List<ProductId> productIds = extractProductIdsFromOrder(input);
 
@@ -50,7 +46,7 @@ public class UpdateOrderUsecase extends Usecase<UpdateOrderInput, Void> {
                     );
                 });
 
-        orderRepository.save(order);
+        orderRepository.update(order);
         return null;
     }
 

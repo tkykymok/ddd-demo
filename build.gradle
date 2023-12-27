@@ -66,18 +66,13 @@ jooq {
     }
 }
 
-//tasks.register('runMigrateAndGenerateJooq') {
-//    doFirst {
-//        // Flywayマイグレーションを実行
-//        gradle.startParameter.taskNames = ['flywayMigrate']
-//        gradle.run()
-//    }
-//    doLast {
-//        // jOOQコード生成を実行
-//        gradle.startParameter.taskNames = ['generateJooq']
-//        gradle.run()
-//    }
-//}
+tasks.register('runGenerateJooq') {
+    doLast {
+        // jOOQコード生成を実行
+        gradle.startParameter.taskNames = ['generateJooq']
+        gradle.run()
+    }
+}
 
 tasks.named('test') {
     useJUnitPlatform()

@@ -8,8 +8,8 @@ import com.example.demo.domain.model.valueobject.ProductId;
 import com.example.demo.domain.model.valueobject.Quantity;
 import com.example.demo.domain.model.valueobject.UserId;
 import com.example.demo.domain.repository.ProductRepository;
-import com.example.demo.domain.repository.order.OrderItemRepository;
 import com.example.demo.domain.repository.order.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,25 +18,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CreateOrderUsecase extends Usecase<CreateOrderInput, Void> {
 
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
-
-    // コンストラクタでリポジトリの初期化
-    public CreateOrderUsecase(OrderRepository orderRepository, OrderItemRepository orderItemRepository, ProductRepository productRepository) {
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
-        this.productRepository = productRepository;
-    }
 
     @Override
     @Transactional
     public Void execute(CreateOrderInput input) {
 
-        // オーダーを生成し、永続化する
-        Order createdOrder = createAndPersistOrder(input.userId());
+        // オーダーを生成する
+        Order createdOrder = Order.create(new UserId(input.userId()));
 
         // オーダーアイテムの商品IDを抽出する
         List<ProductId> productIds = extractProductIdsFromOrder(input);
@@ -54,14 +47,8 @@ public class CreateOrderUsecase extends Usecase<CreateOrderInput, Void> {
                     );
                 });
 
-        orderRepository.save(createdOrder);
+        orderRepository.insert(createdOrder);
         return null;
-    }
-
-    // オーダーを生成し、永続化するメソッド
-    private Order createAndPersistOrder(Long userId) {
-        Order order = Order.create(new UserId(userId));
-        return orderRepository.save(order);
     }
 
 

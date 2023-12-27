@@ -2,13 +2,13 @@ package com.example.demo.domain.repository.order;
 
 import com.example.demo.domain.model.order.Order;
 import com.example.demo.domain.model.valueobject.OrderId;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.ListCrudRepository;
-import org.springframework.lang.NonNull;
 
-import java.util.Optional;
+public interface OrderRepository {
+    Order findById(OrderId id);
 
-public interface OrderRepository extends ListCrudRepository<Order, OrderId> {
-    // 主キーとバージョンでOrderを検索するカスタムメソッド
-    Optional<Order> findByIdAndVersion(OrderId id, Long version);
+    Order findByIdAndVersion(OrderId id, Long version);
+
+    Order insert(Order order);
+
+    Order update(Order order);
 }
