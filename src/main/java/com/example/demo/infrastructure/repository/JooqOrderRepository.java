@@ -53,19 +53,15 @@ public class JooqOrderRepository implements OrderRepository {
 
         // OrderItem のリストをループして、それぞれを ORDER_ITEMS テーブルに挿入
         for (OrderItem item : order.getOrderItems()) {
-            Record insertedItemRecord = dsl.insertInto(ORDER_ITEMS)
+            int count = dsl.insertInto(ORDER_ITEMS)
                     .set(ORDER_ITEMS.ORDER_ID, generatedId.value())
-                    .set(ORDER_ITEMS.SEQ_NO, item.getSeqNo().value())
+                    .set(ORDER_ITEMS.SEQ_NO, item.getKey().seqNo().value())
                     .set(ORDER_ITEMS.PRODUCT_ID, item.getProductId().value())
                     .set(ORDER_ITEMS.QUANTITY, item.getQuantity().value())
                     .set(ORDER_ITEMS.SUB_TOTAL_AMOUNT, item.getSubTotalAmount().value())
-                    .returning(ORDER_ITEMS.ID) // オートインクリメントされたIDを返す
-                    .fetchOne();
+                    .execute();
 
-            if (insertedItemRecord != null) {
-                OrderItemId generatedItemId = new OrderItemId(insertedItemRecord.getValue(ORDER_ITEMS.ID));
-                item.setId(generatedItemId); // 生成されたIDをセット
-            } else {
+            if (count != 1) {
                 return null; // エラーハンドリングが必要です
             }
         }
@@ -84,14 +80,19 @@ public class JooqOrderRepository implements OrderRepository {
                 .where(ORDERS.ID.eq(order.getId().value()))
                 .execute();
 
-        // OrderItem のリストをループして更新
+        // 関連するすべてのOrderItemsを削除
+        dsl.deleteFrom(ORDER_ITEMS)
+                .where(ORDER_ITEMS.ORDER_ID.eq(order.getId().value()))
+                .execute();
+
+        // 新しいOrderItemsを挿入
         for (OrderItem item : order.getOrderItems()) {
-            dsl.update(ORDER_ITEMS)
-                    .set(ORDER_ITEMS.SEQ_NO, item.getSeqNo().value())
+            dsl.insertInto(ORDER_ITEMS)
+                    .set(ORDER_ITEMS.ORDER_ID, item.getKey().orderId().value())
+                    .set(ORDER_ITEMS.SEQ_NO, item.getKey().seqNo().value())
                     .set(ORDER_ITEMS.PRODUCT_ID, item.getProductId().value())
                     .set(ORDER_ITEMS.QUANTITY, item.getQuantity().value())
                     .set(ORDER_ITEMS.SUB_TOTAL_AMOUNT, item.getSubTotalAmount().value())
-                    .where(ORDER_ITEMS.ID.eq(item.getId().value()))
                     .execute();
         }
 
@@ -140,13 +141,13 @@ public class JooqOrderRepository implements OrderRepository {
     }
 
     private OrderItem recordToOrderItem(Record record) {
-        OrderItemId id = new OrderItemId(record.get(ORDER_ITEMS.ID));
         OrderId orderId = new OrderId(record.get(ORDER_ITEMS.ORDER_ID));
         SeqNo seqNo = new SeqNo(record.get(ORDER_ITEMS.SEQ_NO));
         ProductId productId = new ProductId(record.get(ORDER_ITEMS.PRODUCT_ID));
         Quantity quantity = new Quantity(record.get(ORDER_ITEMS.QUANTITY));
         Amount subTotalAmount = new Amount(record.get(ORDER_ITEMS.SUB_TOTAL_AMOUNT));
 
-        return OrderItem.reconstruct(id, orderId, seqNo, productId, quantity, subTotalAmount);
+        return OrderItem.reconstruct(orderId, seqNo, productId, quantity, subTotalAmount);
+
     }
 }

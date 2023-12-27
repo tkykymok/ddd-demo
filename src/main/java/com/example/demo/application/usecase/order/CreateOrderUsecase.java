@@ -28,31 +28,25 @@ public class CreateOrderUsecase extends Usecase<CreateOrderInput, Void> {
     @Transactional
     public Void execute(CreateOrderInput input) {
 
-        // オーダーを生成する
+        // 注文を生成する
         Order createdOrder = Order.create(new UserId(input.userId()));
 
-        // オーダーアイテムの商品IDを抽出する
+        // 注文アイテムの商品IDを抽出する
         List<ProductId> productIds = extractProductIdsFromOrder(input);
 
         // 商品IDから商品をフェッチする
         Map<ProductId, Product> products = fetchProductsByIds(productIds);
 
-        // オーダーアイテムを追加し、全体を永続化する
-        input.orderItems()
-                .forEach(orderItem -> {
-                    createdOrder.addOrderItem(
-                            OrderItemId.of(orderItem.orderItemId()),
-                            products.get(new ProductId(orderItem.productId())),
-                            Quantity.of(orderItem.quantity())
-                    );
-                });
+        // 注文アイテムを追加する
+        createdOrder.addOrderItems(input.orderItems(), products);
 
+        // 注文を保存する
         orderRepository.insert(createdOrder);
         return null;
     }
 
 
-    // 商品IDをオーダから抽出するメソッド
+    // 商品IDを注文から抽出するメソッド
     private List<ProductId> extractProductIdsFromOrder(CreateOrderInput input) {
         return input.orderItems().stream()
                 .map(orderItem -> new ProductId(orderItem.productId()))

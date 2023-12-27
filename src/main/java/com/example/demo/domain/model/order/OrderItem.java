@@ -1,16 +1,11 @@
 package com.example.demo.domain.model.order;
 
-import com.example.demo.domain.model.SingleKeyBaseEntity;
+import com.example.demo.domain.model.CompositeKeyBaseEntity;
 import com.example.demo.domain.model.valueobject.*;
 import lombok.Getter;
-import org.springframework.data.jdbc.core.mapping.AggregateReference;
-import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
-@Table(name = "order_items")
-public class OrderItem extends SingleKeyBaseEntity<OrderItemId> {
-    private OrderId orderId;
-    private SeqNo seqNo;
+public class OrderItem extends CompositeKeyBaseEntity<OrderItemKey> {
     private ProductId productId;
     private Quantity quantity;
     private Amount subTotalAmount;
@@ -18,11 +13,9 @@ public class OrderItem extends SingleKeyBaseEntity<OrderItemId> {
     private OrderItem() {
     }
 
-    public static OrderItem reconstruct(OrderItemId id, OrderId orderId, SeqNo seqNo, ProductId productId, Quantity quantity, Amount subTotalAmount) {
+    public static OrderItem reconstruct(OrderId orderId, SeqNo seqNo, ProductId productId, Quantity quantity, Amount subTotalAmount) {
         OrderItem orderItem = new OrderItem();
-        orderItem.id = id;
-        orderItem.orderId = orderId;
-        orderItem.seqNo = seqNo;
+        orderItem.key = OrderItemKey.of(orderId, seqNo);
         orderItem.productId = productId;
         orderItem.quantity = quantity;
         orderItem.subTotalAmount = subTotalAmount;
@@ -31,19 +24,16 @@ public class OrderItem extends SingleKeyBaseEntity<OrderItemId> {
 
     public static OrderItem create(OrderId orderId, SeqNo seqNo, Product product, Quantity quantity) {
         OrderItem orderItem = new OrderItem();
-        orderItem.orderId = orderId;
-        orderItem.seqNo = seqNo;
+        orderItem.key = OrderItemKey.of(orderId, seqNo);
         orderItem.productId = product.getId();
         orderItem.quantity = quantity;
         orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(product.getPrice(), quantity);
         return orderItem;
     }
 
-    public static OrderItem update(OrderItemId id, OrderId orderId, SeqNo seqNo, Product product, Quantity quantity) {
+    public static OrderItem update(OrderId orderId, SeqNo seqNo, Product product, Quantity quantity) {
         OrderItem orderItem = new OrderItem();
-        orderItem.id = id;
-        orderItem.orderId = orderId;
-        orderItem.seqNo = seqNo;
+        orderItem.key = OrderItemKey.of(orderId, seqNo);
         orderItem.productId = product.getId();
         orderItem.quantity = quantity;
         orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(product.getPrice(), quantity);

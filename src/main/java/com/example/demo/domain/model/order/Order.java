@@ -1,5 +1,6 @@
 package com.example.demo.domain.model.order;
 
+import com.example.demo.application.usecase.order.OrderItemInput;
 import com.example.demo.domain.model.AggregateRoot;
 import com.example.demo.domain.model.valueobject.*;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class Order extends AggregateRoot<OrderId> {
@@ -40,13 +42,22 @@ public class Order extends AggregateRoot<OrderId> {
         return order;
     }
 
-    public void addOrderItem(OrderItemId id, Product product, Quantity quantity) {
-        SeqNo seqNo = SeqNo.of(this.orderItems.size() + 1);
-        OrderItem orderItem = id.value() == null
-                ? OrderItem.create(this.getId(), seqNo, product, quantity)
-                : OrderItem.update(id, this.getId(), seqNo, product, quantity);
-        this.orderItems.add(orderItem);
-        calculateTotalAmount();
+    public void updateVersion(VersionKey version) {
+        this.version = version;
+    }
+
+    public void addOrderItems(List<OrderItemInput> orderItems, Map<ProductId, Product> products) {
+        orderItems.forEach(orderItem -> {
+            SeqNo seqNo = SeqNo.of(this.orderItems.size() + 1);
+            OrderItem newOrderItem = OrderItem.create(
+                    this.getId(),
+                    seqNo,
+                    products.get(ProductId.of(orderItem.productId())),
+                    Quantity.of(orderItem.quantity())
+            );
+            this.orderItems.add(newOrderItem);
+            calculateTotalAmount();
+        });
     }
 
     public void clearOrderItems() {

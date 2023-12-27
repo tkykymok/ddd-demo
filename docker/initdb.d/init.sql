@@ -1,4 +1,3 @@
-
 -- tasks テーブルの存在を確認し、存在しない場合は作成
 CREATE TABLE tasks
 (
@@ -47,18 +46,17 @@ CREATE TABLE orders
     version      BIGINT,
     FOREIGN KEY (user_id) REFERENCES app_users (id)
 );
-
 -- order_items テーブルの存在を確認し、存在しない場合は作成
 CREATE TABLE order_items
 (
-    id               BIGSERIAL PRIMARY KEY,
     order_id         BIGINT,
     seq_no           INT,
     product_id       BIGINT,
     quantity         INT,
     sub_total_amount DECIMAL,
     FOREIGN KEY (order_id) REFERENCES orders (id),
-    FOREIGN KEY (product_id) REFERENCES products (id)
+    FOREIGN KEY (product_id) REFERENCES products (id),
+    PRIMARY KEY (order_id, seq_no)
 );
 
 -- tasks テーブルに初期データを挿入
@@ -116,4 +114,4 @@ INSERT INTO order_items (order_id,
                          sub_total_amount)
 VALUES (1, 1, 1, 2, 1000.00),
        (1, 2, 2, 1, 1000.00),
-       (2, 3, 3, 1, 1500.00);
+       (2, 1, 3, 1, 1500.00);

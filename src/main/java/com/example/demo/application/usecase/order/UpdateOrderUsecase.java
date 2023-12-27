@@ -3,10 +3,7 @@ package com.example.demo.application.usecase.order;
 import com.example.demo.application.usecase.Usecase;
 import com.example.demo.domain.model.order.Order;
 import com.example.demo.domain.model.order.Product;
-import com.example.demo.domain.model.valueobject.OrderId;
-import com.example.demo.domain.model.valueobject.OrderItemId;
-import com.example.demo.domain.model.valueobject.ProductId;
-import com.example.demo.domain.model.valueobject.Quantity;
+import com.example.demo.domain.model.valueobject.*;
 import com.example.demo.domain.repository.ProductRepository;
 import com.example.demo.domain.repository.order.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,17 +32,14 @@ public class UpdateOrderUsecase extends Usecase<UpdateOrderInput, Void> {
 
         Map<ProductId, Product> products = fetchProductsByIds(productIds);
 
+        // 注文のバージョンをインクリメントする
+        order.updateVersion(VersionKey.of(input.version()).increment());
+
         // 注文アイテムをクリアして、新しいアイテムを追加する
         order.clearOrderItems();
-        input.orderItems()
-                .forEach(orderItem -> {
-                    order.addOrderItem(
-                            OrderItemId.of(orderItem.orderItemId()),
-                            products.get(ProductId.of(orderItem.productId())),
-                            Quantity.of(orderItem.quantity())
-                    );
-                });
+        order.addOrderItems(input.orderItems(), products);
 
+        // 注文を更新する
         orderRepository.update(order);
         return null;
     }
