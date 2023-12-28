@@ -7,5 +7,7 @@ import com.example.demo.domain.model.valueobject.TaskId;
 public interface TaskRepository {
     Task findById(TaskId id);
 
+    void insert(Task task);
+
     void update(Task task);
 }

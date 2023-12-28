@@ -5,6 +5,7 @@ import com.example.demo.domain.model.AggregateRoot;
 import com.example.demo.domain.model.valueobject.*;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class Order extends AggregateRoot<OrderId> {
     private Order() {
     }
 
+    // DBから取得したデータをドメインオブジェクトに変換する
     public static Order reconstruct(OrderId id, UserId userId, LocalDate orderDate, Amount totalAmount, VersionKey version, List<OrderItem> orderItems) {
         Order order = new Order();
         order.id = id;
@@ -32,20 +34,23 @@ public class Order extends AggregateRoot<OrderId> {
         return order;
     }
 
+    // ファクトリメソッド
     public static Order create(UserId userId) {
         Order order = new Order();
         order.userId = userId;
         order.orderDate = LocalDate.now();
-        order.totalAmount = Amount.of(0);
+        order.totalAmount = Amount.of(BigDecimal.ZERO);
         order.version = VersionKey.of(0L);
         order.orderItems = new ArrayList<>();
         return order;
     }
 
+    // バージョンを更新する
     public void updateVersion(VersionKey version) {
         this.version = version;
     }
 
+    // 注文アイテムを追加する
     public void addOrderItems(List<OrderItemInput> orderItems) {
         orderItems.forEach(orderItem -> {
             OrderItem newOrderItem = OrderItem.create(
@@ -60,12 +65,15 @@ public class Order extends AggregateRoot<OrderId> {
         });
     }
 
+    // 注文アイテムを削除する
     public void clearOrderItems() {
         this.orderItems.clear();
     }
 
+
+    // 合計金額を計算する
     private void calculateTotalAmount() {
-        this.totalAmount = Amount.of(0);
+        this.totalAmount = Amount.of(BigDecimal.ZERO);
         for (OrderItem orderItem : this.orderItems) {
             this.totalAmount = this.totalAmount.add(orderItem.getSubTotalAmount());
         }

@@ -16,7 +16,7 @@ public class FetchTaskUsecase extends Usecase<Long, Task> {
     @Override
     public Task execute(Long taskId) {
         // タスクの取得
-        Task task = taskRepository.findById(new TaskId(taskId));
+        Task task = taskRepository.findById(TaskId.of(taskId));
 
         if (task == null) {
             throw new RuntimeException("Task not found");

@@ -19,13 +19,13 @@ public class UpdateTaskUsecase extends Usecase<UpdateTaskInput, Void> {
     @Transactional
     public Void execute(UpdateTaskInput input) {
         // タスクの取得
-        Task task = taskRepository.findById(new TaskId(input.getTaskId()));
+        Task task = taskRepository.findById(TaskId.of(input.taskId()));
         if (task == null) {
             throw new RuntimeException("Task not found");
         }
 
         // タスクの更新
-//        task.addSubTask(input.getSubTaskTitle(), input.getSubTaskContent());
+        task.addSubTask(input.subTaskTitle(), input.subTaskContent());
         // タスクの保存
         taskRepository.update(task);
         return null;

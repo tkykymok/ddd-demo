@@ -19,7 +19,7 @@ public class UpdateOrderUsecase extends Usecase<UpdateOrderInput, Void> {
     @Transactional
     public Void execute(UpdateOrderInput input) {
         // 注文IDを使用して、注文を検索する
-        Order order = orderRepository.findByIdAndVersion(OrderId.of(input.orderId()), input.version());
+        Order order = orderRepository.findByIdAndVersion(OrderId.of(input.orderId()), VersionKey.of(input.version()));
         if (order == null) {
             throw new RuntimeException("楽観的排他制御エラー");
         }

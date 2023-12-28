@@ -31,7 +31,50 @@ public class JooqTaskRepository implements TaskRepository {
     }
 
     @Override
+    public void insert(Task task) {
+        dsl.insertInto(TASKS)
+                .set(TASKS.TITLE, task.getTitle())
+                .set(TASKS.CONTENT, task.getContent())
+                .set(TASKS.STATUS, task.getStatus().getCode())
+                .set(TASKS.PARENT_ID, task.getParentId() == null ? null : task.getParentId().value())
+                .set(TASKS.CREATED_AT, task.getCreatedAt())
+                .execute();
+
+        // サブタスクの登録 or 更新
+        task.getSubTasks().forEach(t -> {
+            if (t.getId().value() == null) {
+                // サブタスクのIDがnullの場合は新規登録
+                insert(t);
+            } else {
+                // サブタスクのIDがnullでない場合は更新
+                update(t);
+            }
+        });
+    }
+
+    @Override
     public void update(Task task) {
+        // タスクの更新
+        dsl.update(TASKS)
+                .set(TASKS.ID, task.getId() == null ? null : task.getId().value())
+                .set(TASKS.TITLE, task.getTitle())
+                .set(TASKS.CONTENT, task.getContent())
+                .set(TASKS.STATUS, task.getStatus().getCode())
+                .set(TASKS.PARENT_ID, task.getParentId() == null ? null : task.getParentId().value())
+                .set(TASKS.CREATED_AT, task.getCreatedAt())
+                .where(TASKS.ID.eq(task.getId().value()))
+                .execute();
+
+        // サブタスクの登録 or 更新
+        task.getSubTasks().forEach(t -> {
+            if (t.getId() == null) {
+                // サブタスクのIDがnullの場合は新規登録
+                insert(t);
+            } else {
+                // サブタスクのIDがnullでない場合は更新
+                update(t);
+            }
+        });
     }
 
     public List<Task> findAllTasks() {
@@ -53,7 +96,7 @@ public class JooqTaskRepository implements TaskRepository {
         // タスクをループして親子関係を構築
         for (Task task : tasks) {
             // 親タスクIDがnullの場合はルートタスクとしてリストに追加
-            if (task.getParentId().value() == null) {
+            if (task.getParentId() == null) {
                 rootTasksMap.put(task.getId(), task);
             } else { // 親タスクIDがnullでない場合は、親タスクを取得してサブタスクとして追加
                 Task parent = taskMap.get(task.getParentId());
@@ -68,11 +111,11 @@ public class JooqTaskRepository implements TaskRepository {
 
 
     private Task recordToTask(Record taskRecord) {
-        TaskId id = new TaskId(taskRecord.get(TASKS.ID));
+        TaskId id = taskRecord.get(TASKS.ID) == null ? null : TaskId.of(taskRecord.get(TASKS.ID));
         String title = taskRecord.get(TASKS.TITLE);
         String content = taskRecord.get(TASKS.CONTENT);
         TaskStatus status = TaskStatus.valueOf(taskRecord.get(TASKS.STATUS));
-        TaskId parentId = TaskId.of(taskRecord.get(TASKS.PARENT_ID));
+        TaskId parentId = taskRecord.get(TASKS.PARENT_ID) == null ? null : TaskId.of(taskRecord.get(TASKS.PARENT_ID));
         LocalDateTime createdAt = taskRecord.get(TASKS.CREATED_AT);
         return Task.reconstruct(id, title, content, status, parentId, createdAt);
     }

@@ -21,7 +21,7 @@ public class Task extends SingleKeyBaseEntity<TaskId> {
     private Task() {
     }
 
-    // ファクトリメソッド
+    // DBから取得したデータをドメインオブジェクトに変換する
     public static Task reconstruct(TaskId taskId, String title, String content,
                                    TaskStatus status, TaskId parentId, LocalDateTime createdAt) {
         Task task = new Task();
@@ -35,7 +35,18 @@ public class Task extends SingleKeyBaseEntity<TaskId> {
         return task;
     }
 
-//    public void addSubTask(String title, String content) {
-//        subTasks.add(SubTask.create(this.getId(), title, content));
-//    }
+    public void addSubTask(String title, String content) {
+        subTasks.add(createSubTask(title, content));
+    }
+
+    private Task createSubTask(String title, String content) {
+        Task task = new Task();
+        task.title = title;
+        task.content = content;
+        task.status = TaskStatus.UNCOMPLETED;
+        task.parentId = this.getId();
+        task.createdAt = LocalDateTime.now();
+        task.subTasks = new ArrayList<>();
+        return task;
+    }
 }

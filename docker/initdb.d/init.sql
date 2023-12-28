@@ -1,7 +1,7 @@
 -- tasks テーブルの存在を確認し、存在しない場合は作成
 CREATE TABLE tasks
 (
-    id         BIGINT PRIMARY KEY,
+    id         BIGSERIAL PRIMARY KEY,
     title      VARCHAR(255),
     content    VARCHAR(255),
     status     INT NOT NULL,
@@ -59,6 +59,7 @@ VALUES (1, 'メインタスク1', 'メインタスクの内容1', 0, NULL, CURRE
        (5, 'サブタスク3', 'サブタスクの内容3', 0, 2, CURRENT_TIMESTAMP),
        (6, 'サブタスク1-1', 'サブタスク1のサブタスクの内容1', 0, 3, CURRENT_TIMESTAMP),
        (7, 'サブタスク1-2', 'サブタスク1のサブタスクの内容2', 1, 3, CURRENT_TIMESTAMP);
+ALTER SEQUENCE tasks_id_seq RESTART WITH 100;
 
 -- app_users テーブルに初期データを挿入
 INSERT INTO app_users (id, name, email)

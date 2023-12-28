@@ -42,7 +42,7 @@ public class JooqOrderRepository implements OrderRepository {
      * @return Order
      */
     @Override
-    public Order findByIdAndVersion(OrderId id, Long version) {
+    public Order findByIdAndVersion(OrderId id, VersionKey version) {
         return findOrderAndItems(id, version);
     }
 
@@ -123,8 +123,11 @@ public class JooqOrderRepository implements OrderRepository {
      * @param version VersionKey
      * @return Order
      */
-    private Order findOrderAndItems(OrderId id, Long version) {
+    private Order findOrderAndItems(OrderId id, VersionKey version) {
         Record orderRecord = fetchOrderRecord(id, version);
+        if (orderRecord == null) {
+            return null;
+        }
 
         Result<Record> orderItemsRecords = dsl.select()
                 .from(ORDER_ITEMS)
@@ -141,13 +144,13 @@ public class JooqOrderRepository implements OrderRepository {
      * @param version VersionKey
      * @return Record
      */
-    private Record fetchOrderRecord(OrderId id, Long version) {
+    private Record fetchOrderRecord(OrderId id, VersionKey version) {
         var selectCondition = dsl.select()
                 .from(ORDERS)
                 .where(ORDERS.ID.eq(id.value()));
 
         if (version != null) {
-            selectCondition = selectCondition.and(ORDERS.VERSION.eq(version));
+            selectCondition = selectCondition.and(ORDERS.VERSION.eq(version.value()));
         }
 
         return selectCondition.fetchOne();
@@ -164,7 +167,7 @@ public class JooqOrderRepository implements OrderRepository {
         OrderId id = OrderId.of(orderRecord.get(ORDERS.ID));
         UserId userId = UserId.of(orderRecord.get(ORDERS.USER_ID));
         LocalDate orderDate = orderRecord.get(ORDERS.ORDER_DATE);
-        Amount totalAmount = new Amount(orderRecord.get(ORDERS.TOTAL_AMOUNT));
+        Amount totalAmount = Amount.of(orderRecord.get(ORDERS.TOTAL_AMOUNT));
         VersionKey version = VersionKey.of(orderRecord.get(ORDERS.VERSION));
 
         // OrderItemsの変換
@@ -182,12 +185,12 @@ public class JooqOrderRepository implements OrderRepository {
      * @return OrderItem
      */
     private OrderItem recordToOrderItem(Record record) {
-        OrderId orderId = new OrderId(record.get(ORDER_ITEMS.ORDER_ID));
-        SeqNo seqNo = new SeqNo(record.get(ORDER_ITEMS.SEQ_NO));
-        ProductId productId = new ProductId(record.get(ORDER_ITEMS.PRODUCT_ID));
-        Price price = new Price(record.get(ORDER_ITEMS.PRICE));
-        Quantity quantity = new Quantity(record.get(ORDER_ITEMS.QUANTITY));
-        Amount subTotalAmount = new Amount(record.get(ORDER_ITEMS.SUB_TOTAL_AMOUNT));
+        OrderId orderId = OrderId.of(record.get(ORDER_ITEMS.ORDER_ID));
+        SeqNo seqNo = SeqNo.of(record.get(ORDER_ITEMS.SEQ_NO));
+        ProductId productId = ProductId.of(record.get(ORDER_ITEMS.PRODUCT_ID));
+        Price price = Price.of(record.get(ORDER_ITEMS.PRICE));
+        Quantity quantity = Quantity.of(record.get(ORDER_ITEMS.QUANTITY));
+        Amount subTotalAmount = Amount.of(record.get(ORDER_ITEMS.SUB_TOTAL_AMOUNT));
 
         return OrderItem.reconstruct(orderId, seqNo, productId, price, quantity, subTotalAmount);
 
