@@ -41,6 +41,14 @@ public class JooqProductRepository implements ProductRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean existsById(ProductId productId) {
+        return dsl.fetchExists(
+                dsl.selectFrom(PRODUCTS)
+                        .where(PRODUCTS.ID.eq(productId.value()))
+        );
+    }
+
     private Product recordToProduct(Record record) {
         ProductId id = new ProductId(record.get(PRODUCTS.ID));
         String name = record.get(PRODUCTS.NAME);

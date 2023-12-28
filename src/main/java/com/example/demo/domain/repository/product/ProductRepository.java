@@ -9,4 +9,5 @@ public interface ProductRepository {
 
     List<Product> findAllById(List<ProductId> productIds);
 
+    boolean existsById(ProductId productId);
 }

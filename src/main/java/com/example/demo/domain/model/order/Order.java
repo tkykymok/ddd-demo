@@ -1,15 +1,16 @@
 package com.example.demo.domain.model.order;
 
-import com.example.demo.application.usecase.order.OrderItemInput;
 import com.example.demo.domain.model.AggregateRoot;
-import com.example.demo.domain.model.valueobject.*;
+import com.example.demo.domain.model.valueobject.Amount;
+import com.example.demo.domain.model.valueobject.OrderId;
+import com.example.demo.domain.model.valueobject.UserId;
+import com.example.demo.domain.model.valueobject.VersionKey;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 public class Order extends AggregateRoot<OrderId> {
@@ -47,29 +48,18 @@ public class Order extends AggregateRoot<OrderId> {
 
     // バージョンを更新する
     public void updateVersion(VersionKey version) {
-        this.version = version;
+        this.version = version.increment();
     }
 
-    // 注文アイテムを追加する
-    public void addOrderItems(List<OrderItemInput> orderItems) {
-        orderItems.forEach(orderItem -> {
-            OrderItem newOrderItem = OrderItem.create(
-                    this.getId(),
-                    SeqNo.of(this.orderItems.size() + 1),
-                    ProductId.of(orderItem.productId()),
-                    Price.of(orderItem.price()),
-                    Quantity.of(orderItem.quantity())
-            );
-            this.orderItems.add(newOrderItem);
-            calculateTotalAmount();
-        });
+    public void addOrderItem(OrderItem orderItem) {
+        this.orderItems.add(orderItem);
+        calculateTotalAmount();
     }
 
-    // 注文アイテムを削除する
+    // 注文アイテムを空にする
     public void clearOrderItems() {
         this.orderItems.clear();
     }
-
 
     // 合計金額を計算する
     private void calculateTotalAmount() {
@@ -78,6 +68,5 @@ public class Order extends AggregateRoot<OrderId> {
             this.totalAmount = this.totalAmount.add(orderItem.getSubTotalAmount());
         }
     }
-
 
 }

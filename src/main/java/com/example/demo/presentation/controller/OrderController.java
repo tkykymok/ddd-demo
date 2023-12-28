@@ -3,6 +3,7 @@ package com.example.demo.presentation.controller;
 import com.example.demo.application.usecase.order.*;
 import com.example.demo.presentation.web.request.order.CreateOrderRequest;
 import com.example.demo.presentation.web.request.order.UpdateOrderRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,17 +13,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/order")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final FetchOrderUsecase fetchOrderUsecase;
     private final CreateOrderUsecase createOrderUsecase;
     private final UpdateOrderUsecase updateOrderUsecase;
-
-    public OrderController(FetchOrderUsecase fetchOrderUsecase, CreateOrderUsecase createOrderUsecase, UpdateOrderUsecase updateOrderUsecase) {
-        this.fetchOrderUsecase = fetchOrderUsecase;
-        this.createOrderUsecase = createOrderUsecase;
-        this.updateOrderUsecase = updateOrderUsecase;
-    }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<?> getOrderDetail(@PathVariable Long orderId) throws IOException {

@@ -14,6 +14,7 @@ public class OrderItem extends CompositeKeyBaseEntity<OrderItemKey> {
     private OrderItem() {
     }
 
+    // DBから取得したデータをドメインオブジェクトに変換する
     public static OrderItem reconstruct(OrderId orderId, SeqNo seqNo, ProductId productId, Price price, Quantity quantity, Amount subTotalAmount) {
         OrderItem orderItem = new OrderItem();
         orderItem.key = OrderItemKey.of(orderId, seqNo);
@@ -24,6 +25,7 @@ public class OrderItem extends CompositeKeyBaseEntity<OrderItemKey> {
         return orderItem;
     }
 
+    // ファクトリメソッド
     public static OrderItem create(OrderId orderId, SeqNo seqNo, ProductId productId, Price price, Quantity quantity) {
         OrderItem orderItem = new OrderItem();
         orderItem.key = OrderItemKey.of(orderId, seqNo);
