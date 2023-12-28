@@ -6,6 +6,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Builder
-public record OrderDetailsResult(Long id, LocalDate orderDate, BigDecimal totalAmount, String productName,
-                                 BigDecimal productPrice, Integer quantity, BigDecimal subTotalAmount) {
+public record OrderDetailsResult(
+        Long id,
+        LocalDate orderDate,
+        BigDecimal totalAmount,
+        String productName,
+        BigDecimal productPrice,
+        Integer quantity,
+        BigDecimal subTotalAmount) {
 }

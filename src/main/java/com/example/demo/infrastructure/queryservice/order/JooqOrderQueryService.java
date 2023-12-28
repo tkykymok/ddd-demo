@@ -21,7 +21,12 @@ import static com.example.demo.infrastructure.jooq.Tables.*;
 public class JooqOrderQueryService implements OrderQueryService {
     private final DSLContext dsl;
 
-    // 注文IDに基づいて注文詳細を取得するメソッド
+    /**
+     * OrderId で注文詳細を検索する
+     *
+     * @param orderId OrderId
+     * @return Order
+     */
     @Override
     public List<OrderDetailsResult> findOrderDetailsById(Long orderId) throws IOException {
         Result<Record> records = dsl.select()
@@ -36,14 +41,18 @@ public class JooqOrderQueryService implements OrderQueryService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Record から OrderDetailsResult に変換する
+     *
+     * @param record Record
+     * @return OrderDetailsResult
+     */
     private OrderDetailsResult recordToOrderDetailsResult(Record record) {
-        // 以下はOrderDetailsResultオブジェクトの作成例です。
-        // 実際のフィールドはOrderDetailsResultクラスの定義に依存します。
         Long orderId = record.getValue(ORDERS.ID);
         LocalDate orderDate = record.getValue(ORDERS.ORDER_DATE);
         BigDecimal totalAmount = record.getValue(ORDERS.TOTAL_AMOUNT);
         String productName = record.getValue(PRODUCTS.NAME);
-        BigDecimal productPrice = record.getValue(PRODUCTS.PRICE);
+        BigDecimal productPrice = record.getValue(ORDER_ITEMS.PRICE);
         Integer quantity = record.getValue(ORDER_ITEMS.QUANTITY);
         BigDecimal subTotalAmount = record.getValue(ORDER_ITEMS.SUB_TOTAL_AMOUNT);
 

@@ -1,4 +1,10 @@
 package com.example.demo.presentation.web.request.order;
 
-public record OrderItemRequest(Long orderItemId, Long productId, Integer quantity) {
+import java.math.BigDecimal;
+
+public record OrderItemRequest(
+        Long orderItemId,
+        Long productId,
+        BigDecimal price,
+        Integer quantity) {
 }

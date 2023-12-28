@@ -7,39 +7,31 @@ import lombok.Getter;
 @Getter
 public class OrderItem extends CompositeKeyBaseEntity<OrderItemKey> {
     private ProductId productId;
+    private Price price;
     private Quantity quantity;
     private Amount subTotalAmount;
 
     private OrderItem() {
     }
 
-    public static OrderItem reconstruct(OrderId orderId, SeqNo seqNo, ProductId productId, Quantity quantity, Amount subTotalAmount) {
+    public static OrderItem reconstruct(OrderId orderId, SeqNo seqNo, ProductId productId, Price price, Quantity quantity, Amount subTotalAmount) {
         OrderItem orderItem = new OrderItem();
         orderItem.key = OrderItemKey.of(orderId, seqNo);
         orderItem.productId = productId;
+        orderItem.price = price;
         orderItem.quantity = quantity;
         orderItem.subTotalAmount = subTotalAmount;
         return orderItem;
     }
 
-    public static OrderItem create(OrderId orderId, SeqNo seqNo, Product product, Quantity quantity) {
+    public static OrderItem create(OrderId orderId, SeqNo seqNo, ProductId productId, Price price, Quantity quantity) {
         OrderItem orderItem = new OrderItem();
         orderItem.key = OrderItemKey.of(orderId, seqNo);
-        orderItem.productId = product.getId();
+        orderItem.productId = productId;
+        orderItem.price = price;
         orderItem.quantity = quantity;
-        orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(product.getPrice(), quantity);
+        orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(price, quantity);
         return orderItem;
     }
-
-    public static OrderItem update(OrderId orderId, SeqNo seqNo, Product product, Quantity quantity) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.key = OrderItemKey.of(orderId, seqNo);
-        orderItem.productId = product.getId();
-        orderItem.quantity = quantity;
-        orderItem.subTotalAmount = Amount.calculateTotalFromPriceAndQuantity(product.getPrice(), quantity);
-        return orderItem;
-    }
-
-
 }
 

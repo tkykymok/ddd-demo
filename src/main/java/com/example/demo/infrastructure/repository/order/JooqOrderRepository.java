@@ -1,4 +1,4 @@
-package com.example.demo.infrastructure.repository;
+package com.example.demo.infrastructure.repository.order;
 
 import com.example.demo.domain.model.order.Order;
 import com.example.demo.domain.model.order.OrderItem;
@@ -23,18 +23,36 @@ public class JooqOrderRepository implements OrderRepository {
 
     private final DSLContext dsl;
 
+    /**
+     * OrderId で検索する
+     *
+     * @param id OrderId
+     * @return Order
+     */
     @Override
     public Order findById(OrderId id) {
         return findOrderAndItems(id, null);
     }
 
+    /**
+     * OrderId と VersionKey で検索する
+     *
+     * @param id      OrderId
+     * @param version VersionKey
+     * @return Order
+     */
     @Override
     public Order findByIdAndVersion(OrderId id, Long version) {
         return findOrderAndItems(id, version);
     }
 
+    /**
+     * Order と OrderItems を挿入する
+     *
+     * @param order Order
+     */
     @Override
-    public Order insert(Order order) {
+    public void insert(Order order) {
         // Order テーブルへの挿入と生成されたIDの取得
         Record insertedOrderRecord = dsl.insertInto(ORDERS)
                 .set(ORDERS.USER_ID, order.getUserId().value())
@@ -45,7 +63,7 @@ public class JooqOrderRepository implements OrderRepository {
                 .fetchOne();
 
         if (insertedOrderRecord == null) {
-            return null; // エラーハンドリングが必要です
+            throw new RuntimeException("Order insert failed");
         }
 
         OrderId generatedId = OrderId.of(insertedOrderRecord.getValue(ORDERS.ID));
@@ -53,24 +71,24 @@ public class JooqOrderRepository implements OrderRepository {
 
         // OrderItem のリストをループして、それぞれを ORDER_ITEMS テーブルに挿入
         for (OrderItem item : order.getOrderItems()) {
-            int count = dsl.insertInto(ORDER_ITEMS)
+            dsl.insertInto(ORDER_ITEMS)
                     .set(ORDER_ITEMS.ORDER_ID, generatedId.value())
                     .set(ORDER_ITEMS.SEQ_NO, item.getKey().seqNo().value())
                     .set(ORDER_ITEMS.PRODUCT_ID, item.getProductId().value())
+                    .set(ORDER_ITEMS.PRICE, item.getPrice().value())
                     .set(ORDER_ITEMS.QUANTITY, item.getQuantity().value())
                     .set(ORDER_ITEMS.SUB_TOTAL_AMOUNT, item.getSubTotalAmount().value())
                     .execute();
-
-            if (count != 1) {
-                return null; // エラーハンドリングが必要です
-            }
         }
-
-        return order; // 挿入されたOrderオブジェクトを返す
     }
 
+    /**
+     * Order と OrderItems を更新する
+     *
+     * @param order Order
+     */
     @Override
-    public Order update(Order order) {
+    public void update(Order order) {
         // ORDERS テーブルのレコードを更新
         dsl.update(ORDERS)
                 .set(ORDERS.USER_ID, order.getUserId().value())
@@ -91,19 +109,22 @@ public class JooqOrderRepository implements OrderRepository {
                     .set(ORDER_ITEMS.ORDER_ID, item.getKey().orderId().value())
                     .set(ORDER_ITEMS.SEQ_NO, item.getKey().seqNo().value())
                     .set(ORDER_ITEMS.PRODUCT_ID, item.getProductId().value())
+                    .set(ORDER_ITEMS.PRICE, item.getPrice().value())
                     .set(ORDER_ITEMS.QUANTITY, item.getQuantity().value())
                     .set(ORDER_ITEMS.SUB_TOTAL_AMOUNT, item.getSubTotalAmount().value())
                     .execute();
         }
-
-        return order;
     }
 
+    /**
+     * Order と OrderItems を取得する
+     *
+     * @param id      OrderId
+     * @param version VersionKey
+     * @return Order
+     */
     private Order findOrderAndItems(OrderId id, Long version) {
         Record orderRecord = fetchOrderRecord(id, version);
-        if (orderRecord == null) {
-            return null;
-        }
 
         Result<Record> orderItemsRecords = dsl.select()
                 .from(ORDER_ITEMS)
@@ -113,18 +134,32 @@ public class JooqOrderRepository implements OrderRepository {
         return recordToOrder(orderRecord, orderItemsRecords);
     }
 
+    /**
+     * Order テーブルからレコードを取得する
+     *
+     * @param id      OrderId
+     * @param version VersionKey
+     * @return Record
+     */
     private Record fetchOrderRecord(OrderId id, Long version) {
         var selectCondition = dsl.select()
                 .from(ORDERS)
                 .where(ORDERS.ID.eq(id.value()));
 
         if (version != null) {
-            selectCondition.and(ORDERS.VERSION.eq(version));
+            selectCondition = selectCondition.and(ORDERS.VERSION.eq(version));
         }
 
         return selectCondition.fetchOne();
     }
 
+    /**
+     * Record から Order オブジェクトを生成する
+     *
+     * @param orderRecord       Order テーブルのレコード
+     * @param orderItemsRecords OrderItems テーブルのレコード
+     * @return Order
+     */
     private Order recordToOrder(Record orderRecord, Result<Record> orderItemsRecords) {
         OrderId id = OrderId.of(orderRecord.get(ORDERS.ID));
         UserId userId = UserId.of(orderRecord.get(ORDERS.USER_ID));
@@ -140,14 +175,21 @@ public class JooqOrderRepository implements OrderRepository {
         return Order.reconstruct(id, userId, orderDate, totalAmount, version, orderItems);
     }
 
+    /**
+     * Record から OrderItem オブジェクトを生成する
+     *
+     * @param record OrderItems テーブルのレコード
+     * @return OrderItem
+     */
     private OrderItem recordToOrderItem(Record record) {
         OrderId orderId = new OrderId(record.get(ORDER_ITEMS.ORDER_ID));
         SeqNo seqNo = new SeqNo(record.get(ORDER_ITEMS.SEQ_NO));
         ProductId productId = new ProductId(record.get(ORDER_ITEMS.PRODUCT_ID));
+        Price price = new Price(record.get(ORDER_ITEMS.PRICE));
         Quantity quantity = new Quantity(record.get(ORDER_ITEMS.QUANTITY));
         Amount subTotalAmount = new Amount(record.get(ORDER_ITEMS.SUB_TOTAL_AMOUNT));
 
-        return OrderItem.reconstruct(orderId, seqNo, productId, quantity, subTotalAmount);
+        return OrderItem.reconstruct(orderId, seqNo, productId, price, quantity, subTotalAmount);
 
     }
 }

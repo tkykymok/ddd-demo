@@ -22,13 +22,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     implementation 'org.postgresql:postgresql:42.7.1'
-
-
     implementation 'org.jooq:jooq:3.19.1'
-
     jooqGenerator 'org.postgresql:postgresql:42.7.1'
     jooqGenerator 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
-
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 }
@@ -63,14 +59,6 @@ jooq {
                 }
             }
         }
-    }
-}
-
-tasks.register('runGenerateJooq') {
-    doLast {
-        // jOOQコード生成を実行
-        gradle.startParameter.taskNames = ['generateJooq']
-        gradle.run()
     }
 }
 

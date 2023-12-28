@@ -1,7 +1,5 @@
 package com.example.demo.application.usecase.user;
 
-import org.springframework.data.relational.core.mapping.Column;
-
 public class UserOrderProduct {
     public static final String COLUMN_USER_ID = "userId";
     public static final String COLUMN_USER_NAME = "userName";

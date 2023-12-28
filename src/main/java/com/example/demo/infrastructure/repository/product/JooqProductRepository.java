@@ -1,9 +1,9 @@
-package com.example.demo.infrastructure.repository;
+package com.example.demo.infrastructure.repository.product;
 
 import com.example.demo.domain.model.order.Product;
 import com.example.demo.domain.model.valueobject.Price;
 import com.example.demo.domain.model.valueobject.ProductId;
-import com.example.demo.domain.repository.ProductRepository;
+import com.example.demo.domain.repository.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Record;

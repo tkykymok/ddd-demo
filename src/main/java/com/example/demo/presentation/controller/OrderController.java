@@ -37,6 +37,7 @@ public class OrderController {
                 .map(orderItem -> new OrderItemInput(
                         null,
                         orderItem.productId(),
+                        orderItem.price(),
                         orderItem.quantity()
                 )
         ).collect(Collectors.toList());
@@ -53,6 +54,7 @@ public class OrderController {
                 orderItem -> new OrderItemInput(
                         orderItem.orderItemId(),
                         orderItem.productId(),
+                        orderItem.price(),
                         orderItem.quantity()
                 )
         ).collect(Collectors.toList());

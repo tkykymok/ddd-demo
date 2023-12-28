@@ -8,7 +8,7 @@ public interface OrderRepository {
 
     Order findByIdAndVersion(OrderId id, Long version);
 
-    Order insert(Order order);
+    void insert(Order order);
 
-    Order update(Order order);
+    void update(Order order);
 }

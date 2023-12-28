@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 
 public record Price(BigDecimal value) implements ValueObject {
-    public static Price of(double i) {
-        return new Price(BigDecimal.valueOf(i));
+    public static Price of(BigDecimal value) {
+        return new Price(value);
     }
 }

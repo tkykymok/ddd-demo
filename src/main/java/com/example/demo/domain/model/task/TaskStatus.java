@@ -1,5 +1,8 @@
 package com.example.demo.domain.model.task;
 
+import lombok.Getter;
+
+@Getter
 public enum TaskStatus {
     UNCOMPLETED(0, "未完了"),
     IN_PROGRESS(1, "進行中"),
@@ -13,11 +16,12 @@ public enum TaskStatus {
         this.description = description;
     }
 
-    public Integer getCode() {
-        return code;
-    }
-
-    public String getDescription() {
-        return description;
+    public static TaskStatus valueOf(Integer code) {
+        for (TaskStatus status : TaskStatus.values()) {
+            if (status.getCode().equals(code)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("TaskStatus is not found. code: " + code);
     }
 }

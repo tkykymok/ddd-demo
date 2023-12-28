@@ -46,13 +46,13 @@ public class Order extends AggregateRoot<OrderId> {
         this.version = version;
     }
 
-    public void addOrderItems(List<OrderItemInput> orderItems, Map<ProductId, Product> products) {
+    public void addOrderItems(List<OrderItemInput> orderItems) {
         orderItems.forEach(orderItem -> {
-            SeqNo seqNo = SeqNo.of(this.orderItems.size() + 1);
             OrderItem newOrderItem = OrderItem.create(
                     this.getId(),
-                    seqNo,
-                    products.get(ProductId.of(orderItem.productId())),
+                    SeqNo.of(this.orderItems.size() + 1),
+                    ProductId.of(orderItem.productId()),
+                    Price.of(orderItem.price()),
                     Quantity.of(orderItem.quantity())
             );
             this.orderItems.add(newOrderItem);

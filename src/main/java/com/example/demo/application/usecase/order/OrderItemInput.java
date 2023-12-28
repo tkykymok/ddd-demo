@@ -1,4 +1,10 @@
 package com.example.demo.application.usecase.order;
 
-public record OrderItemInput(Long orderItemId, Long productId, Integer quantity) {
+import java.math.BigDecimal;
+
+public record OrderItemInput(
+        Long orderItemId,
+        Long productId,
+        BigDecimal price,
+        Integer quantity) {
 }

@@ -5,17 +5,7 @@ CREATE TABLE tasks
     title      VARCHAR(255),
     content    VARCHAR(255),
     status     INT NOT NULL,
-    created_at TIMESTAMP
-);
-
--- sub_tasks テーブルの存在を確認し、存在しない場合は作成
-CREATE TABLE sub_tasks
-(
-    id         BIGINT PRIMARY KEY,
     parent_id  BIGINT,
-    title      VARCHAR(255),
-    content    VARCHAR(255),
-    status     INT NOT NULL,
     created_at TIMESTAMP,
     FOREIGN KEY (parent_id) REFERENCES tasks (id)
 );
@@ -52,6 +42,7 @@ CREATE TABLE order_items
     order_id         BIGINT,
     seq_no           INT,
     product_id       BIGINT,
+    price            DECIMAL,
     quantity         INT,
     sub_total_amount DECIMAL,
     FOREIGN KEY (order_id) REFERENCES orders (id),
@@ -60,35 +51,14 @@ CREATE TABLE order_items
 );
 
 -- tasks テーブルに初期データを挿入
-INSERT INTO tasks (id, title, content, status, created_at)
-VALUES (1, '親タスク1', '親タスクの内容1', 0, CURRENT_TIMESTAMP),
-       (2, '親タスク2', '親タスクの内容2', 1, CURRENT_TIMESTAMP);
-
--- sub_tasks テーブルに初期データを挿入
-INSERT INTO sub_tasks (id,
-                       parent_id,
-                       title,
-                       content,
-                       status,
-                       created_at)
-VALUES (101,
-        1,
-        '子タスク1-1',
-        '子タスクの内容1-1',
-        0,
-        CURRENT_TIMESTAMP),
-       (102,
-        1,
-        '子タスク1-2',
-        '子タスクの内容1-2',
-        2,
-        CURRENT_TIMESTAMP),
-       (201,
-        2,
-        '子タスク2-1',
-        '子タスクの内容2-1',
-        0,
-        CURRENT_TIMESTAMP);
+INSERT INTO tasks (id, title, content, status, parent_id, created_at)
+VALUES (1, 'メインタスク1', 'メインタスクの内容1', 0, NULL, CURRENT_TIMESTAMP),
+       (2, 'メインタスク2', 'メインタスクの内容2', 1, NULL, CURRENT_TIMESTAMP),
+       (3, 'サブタスク1', 'サブタスクの内容1', 0, 1, CURRENT_TIMESTAMP),
+       (4, 'サブタスク2', 'サブタスクの内容2', 1, 1, CURRENT_TIMESTAMP),
+       (5, 'サブタスク3', 'サブタスクの内容3', 0, 2, CURRENT_TIMESTAMP),
+       (6, 'サブタスク1-1', 'サブタスク1のサブタスクの内容1', 0, 3, CURRENT_TIMESTAMP),
+       (7, 'サブタスク1-2', 'サブタスク1のサブタスクの内容2', 1, 3, CURRENT_TIMESTAMP);
 
 -- app_users テーブルに初期データを挿入
 INSERT INTO app_users (id, name, email)
@@ -110,8 +80,9 @@ VALUES (1, '2023-01-01', 2000.00, 0),
 INSERT INTO order_items (order_id,
                          seq_no,
                          product_id,
+                         price,
                          quantity,
                          sub_total_amount)
-VALUES (1, 1, 1, 2, 1000.00),
-       (1, 2, 2, 1, 1000.00),
-       (2, 1, 3, 1, 1500.00);
+VALUES (1, 1, 1, 500, 2, 1000.00),
+       (1, 2, 2, 1000, 1, 1000.00),
+       (2, 1, 3, 1500, 1, 1500.00);
